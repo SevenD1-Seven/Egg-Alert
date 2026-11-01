@@ -198,10 +198,9 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    // Exactly 5-second broadcast delay offset
-    const streamDelaySec = 5; 
+    // Adjusted total delay offset to completely close the final gap
+    const streamDelaySec = 41; 
 
-    // Helper to handle negative numbers cleanly in JavaScript modulo
     function mod(n, m) {
       return ((n % m) + m) % m;
     }
@@ -212,10 +211,10 @@
         const localMin = d.getMinutes();
         const localSec = d.getSeconds();
 
-        // Total seconds elapsed in the current hour, adjusted for the 5s stream delay
+        // Total seconds elapsed in current hour, adjusted for broadcast delay
         const elapsedInHour = (localMin * 60) + localSec - streamDelaySec;
 
-        // 1. Main Timer (5-minute / 300-second cycle)
+        // 1. Main Timer (5-minute cycle)
         const mainRem = 300 - mod(elapsedInHour, 300);
         const iconEl = document.getElementById('main-icon');
         const textEl = document.getElementById('main-timer-text');
@@ -231,12 +230,12 @@
           textEl.innerText = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
         }
 
-        // 2. Middle Timer (Resets at :15 and :45 of every hour -> 30-min / 1800s cycle offset by 900s)
+        // 2. Middle Timer (Resets at :15 and :45)
         const t1Rem = 1800 - mod(elapsedInHour + 900, 1800);
         document.getElementById('timer1-text').innerText = 
           String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
 
-        // 3. Bottom Timer (Resets at :00 and :30 of every hour -> 30-min / 1800s cycle)
+        // 3. Bottom Timer (Resets at :00 and :30)
         const t2Rem = 1800 - mod(elapsedInHour, 1800);
         document.getElementById('timer2-text').innerText = 
           String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
