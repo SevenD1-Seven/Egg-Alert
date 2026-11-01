@@ -198,16 +198,16 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    // Now true absolute seconds! Start at 0. If off by X seconds, just set this to X or -X.
-    let LATENCY_OFFSET = -190; 
+    // Direct seconds offset. If overlay is ahead of game, make this positive (e.g., 10, 20). 
+    // If overlay is behind game, make this negative (e.g., -10, -20).
+    let timerOffsetSec = 0; 
 
     function tick() {
       try {
-        // Absolute Unix Epoch seconds
-        const totalSeconds = Math.floor(Date.now() / 1000) + LATENCY_OFFSET;
+        const nowSec = Math.floor(Date.now() / 1000) + timerOffsetSec;
 
-        // Main Timer (5-min interval = 300s)
-        const mainRem = 300 - (totalSeconds % 300);
+        // Clean positive modulo for 5-min (300s) main timer
+        const mainRem = 300 - (nowSec % 300);
         const iconEl = document.getElementById('main-icon');
         const textEl = document.getElementById('main-timer-text');
 
@@ -223,12 +223,12 @@
         }
 
         // Event Timer 1 (30-min interval = 1800s, offset 900s)
-        const t1Rem = 1800 - ((totalSeconds + 900) % 1800);
+        const t1Rem = 1800 - ((nowSec + 900) % 1800);
         document.getElementById('timer1-text').innerText = 
           String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
 
         // Event Timer 2 (30-min interval = 1800s)
-        const t2Rem = 1800 - (totalSeconds % 1800);
+        const t2Rem = 1800 - (nowSec % 1800);
         document.getElementById('timer2-text').innerText = 
           String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
       } catch (err) {
