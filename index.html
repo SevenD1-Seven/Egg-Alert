@@ -182,7 +182,7 @@
         <div id="timer1-text" class="timer-text">30:00</div>
       </div>
 
-      <!-- TIMER 2 (30-MIN EVENT SPAWN B - RESETTING AT :00 AND :30 LOCAL TIME) -->
+      <!-- TIMER 2 (30-MIN EVENT SPAWN B) -->
       <div class="timer-card timer-secondary">
         <div class="icon-box">
           <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
@@ -198,7 +198,8 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    const timerOffsetSec = 0; 
+    // 5-second stream broadcast delay offset
+    const streamDelaySec = 5; 
 
     function tick() {
       try {
@@ -206,8 +207,8 @@
         const localMin = d.getMinutes();
         const localSec = d.getSeconds();
 
-        // Total seconds elapsed in current hour
-        const hourSec = (localMin * 60) + localSec + timerOffsetSec;
+        // Account for the stream broadcast delay
+        const hourSec = (localMin * 60) + localSec - streamDelaySec;
 
         // Main Timer (5-min interval = 300s)
         const mainRem = 300 - (((hourSec % 300) + 300) % 300);
@@ -225,13 +226,13 @@
           textEl.innerText = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
         }
 
-        // Event Timer 1 (30-min interval, offset 15m / 900s relative to hourly marks)
+        // Event Timer 1 (30-min interval, offset 900s)
         const t1Rem = 1800 - ((((hourSec + 900) % 1800) + 1800) % 1800);
         document.getElementById('timer1-text').innerText = 
           String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
 
-        // Event Timer 2 (Locked strictly to hit 00:00 at :00 and :30 local time)
-        const t2Rem = 1800 - (((hourSec % 1800) + 1800) % 1800);
+        // Event Timer 2 (30-min interval, fixed syntax)
+        const t2Rem = 1800 - ((((hourSec % 1800) + 1800) % 1800));
         document.getElementById('timer2-text').innerText = 
           String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
       } catch (err) {
