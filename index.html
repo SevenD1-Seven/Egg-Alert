@@ -4,151 +4,142 @@
   <meta charset="UTF-8">
   <title>24/7 Stream Overlay</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
     }
 
-    body {
-      background-color: transparent;
-      font-family: 'Arial Black', Impact, sans-serif;
-      overflow: hidden;
-      width: 100vw;
-      height: 100vh;
-      color: #fff;
+    body { 
+      background: transparent; 
+      font-family: 'Arial Black', Impact, sans-serif; 
+      overflow: hidden; 
+      width: 100vw; 
+      height: 100vh; 
+      color: #fff; 
     }
 
-    .right-sidebar {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 380px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+    .right-sidebar { 
+      position: absolute; 
+      top: 20px; 
+      right: 20px; 
+      width: 380px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 16px; 
     }
 
     /* BANNERS */
-    .banner-card {
-      position: relative;
-      height: 75px;
-      border-radius: 12px;
-      overflow: hidden;
-      background-color: #111;
-      border: 4px solid #00d2ff;
-      box-shadow: 
-        inset 0 0 6px #0088cc,
-        0 0 10px rgba(0, 210, 255, 0.6),
-        inset 2px 2px 3px rgba(255, 255, 255, 0.8),
-        inset -2px -2px 3px rgba(0, 0, 0, 0.8);
+    .banner-card { 
+      position: relative; 
+      height: 75px; 
+      border-radius: 12px; 
+      overflow: hidden; 
+      background-color: #111; 
+      border: 4px solid #00d2ff; 
+      box-shadow: inset 0 0 6px #0088cc, 0 0 10px rgba(0, 210, 255, 0.6); 
     }
 
-    .banner-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 1;
-      opacity: 0.6;
+    .banner-bg { 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      z-index: 1; 
+      opacity: 0.6; 
     }
 
-    .marquee-wrapper {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      overflow: hidden;
-      white-space: nowrap;
+    .marquee-wrapper { 
+      position: relative; 
+      z-index: 2; 
+      width: 100%; 
+      height: 100%; 
+      display: flex; 
+      align-items: center; 
+      overflow: hidden; 
+      white-space: nowrap; 
     }
 
-    .marquee-text {
-      display: inline-block;
-      font-size: 24px;
-      font-weight: 900;
-      color: #ff1100;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 2px 2px 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
-      padding-left: 100%;
-      animation: marquee 12s linear infinite;
+    .marquee-text { 
+      display: inline-block; 
+      font-size: 24px; 
+      font-weight: 900; 
+      color: #ff1100; 
+      text-transform: uppercase; 
+      letter-spacing: 1px; 
+      text-shadow: 2px 2px 4px #000, -1px -1px 0 #000; 
+      padding-left: 100%; 
+      animation: marquee 12s linear infinite; 
     }
 
-    @keyframes marquee {
-      0%   { transform: translate(0, 0); }
-      100% { transform: translate(-100%, 0); }
+    @keyframes marquee { 
+      0% { transform: translate(0, 0); } 
+      100% { transform: translate(-100%, 0); } 
     }
 
     /* TIMERS CONTAINER */
-    .timers-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      background: rgba(0, 0, 0, 0.4);
-      padding: 12px;
-      border-radius: 12px;
-      backdrop-filter: blur(4px);
+    .timers-container { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 12px; 
+      background: rgba(0, 0, 0, 0.4); 
+      padding: 12px; 
+      border-radius: 12px; 
+      backdrop-filter: blur(4px); 
     }
 
-    .timer-card {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 14px;
-      background: rgba(20, 20, 30, 0.75);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-radius: 10px;
-      padding: 8px 14px;
+    .timer-card { 
+      display: flex; 
+      align-items: center; 
+      justify-content: flex-start; 
+      gap: 14px; 
+      background: rgba(20, 20, 30, 0.75); 
+      border: 2px solid rgba(255, 255, 255, 0.2); 
+      border-radius: 10px; 
+      padding: 8px 14px; 
     }
 
-    .icon-box {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 48px;
-      height: 48px;
-      flex-shrink: 0;
+    .icon-box { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      width: 48px; 
+      height: 48px; 
+      flex-shrink: 0; 
     }
 
-    .timer-icon {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+    .timer-icon { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: contain; 
     }
 
     /* MAIN 5-MIN TIMER */
-    .timer-main {
-      border: 3px solid #ffcc00;
-      background: rgba(255, 204, 0, 0.9);
-      padding: 12px 16px;
+    .timer-main { 
+      border: 3px solid #ffcc00; 
+      background: rgba(255, 204, 0, 0.9); 
+      padding: 12px 16px; 
     }
 
-    .timer-main .timer-text {
-      font-size: 38px;
-      font-weight: 900;
-      color: #000000;
+    .timer-main .timer-text { 
+      font-size: 38px; 
+      font-weight: 900; 
+      color: #000000; 
     }
 
     /* SECONDARY 30-MIN TIMERS */
-    .timer-secondary .timer-text {
-      font-size: 28px;
-      font-weight: 800;
-      color: #ffffff;
-      text-shadow: 
-        -2px -2px 0 #000,  
-         2px -2px 0 #000,
-        -2px  2px 0 #000,
-         2px  2px 0 #000,
-         0px  3px 5px rgba(0,0,0,0.8);
+    .timer-secondary .timer-text { 
+      font-size: 28px; 
+      font-weight: 800; 
+      color: #ffffff; 
+      text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; 
     }
 
-    .timer-secondary .icon-box {
-      width: 36px;
-      height: 36px;
+    .timer-secondary .icon-box { 
+      width: 36px; 
+      height: 36px; 
     }
   </style>
 </head>
@@ -160,9 +151,7 @@
     <div class="banner-card">
       <img class="banner-bg" src="banner1_bg.gif" alt="" onerror="this.style.display='none'">
       <div class="marquee-wrapper">
-        <div class="marquee-text">
-          ¿Buscas alguna fusión? Deja tu user y un comentario.
-        </div>
+        <div class="marquee-text">¿Buscas alguna fusión? Deja tu user y un comentario.</div>
       </div>
     </div>
 
@@ -170,9 +159,7 @@
     <div class="banner-card">
       <img class="banner-bg" src="banner2_bg.gif" alt="" onerror="this.style.display='none'">
       <div class="marquee-wrapper">
-        <div class="marquee-text">
-          Looking for a merge? Leave your user and a comment.
-        </div>
+        <div class="marquee-text">Looking for a merge? Leave your user and a comment.</div>
       </div>
     </div>
 
@@ -210,45 +197,18 @@
   <script>
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
-    let LATENCY_OFFSET = 0; 
+    
+    // Latency offset adjusted to match your in-game clock (+10 seconds)
+    const LATENCY_OFFSET = 10; 
 
-    function updateTimers() {
-      const now = new Date();
-      const rawSeconds = (now.getMinutes() * 60) + now.getSeconds();
-      const adjustedSeconds = rawSeconds + LATENCY_OFFSET;
+    function tick() {
+      const d = new Date();
+      const sec = (d.getMinutes() * 60) + d.getSeconds() + LATENCY_OFFSET;
 
-      // 1. MAIN 5-MIN TIMER
-      const mainRemaining = 300 - (((adjustedSeconds % 300) + 300) % 300);
-      const mainIconEl = document.getElementById('main-icon');
-      const mainTimerText = document.getElementById('main-timer-text');
+      // Main Timer (5-min interval)
+      const mainRem = 300 - (((sec % 300) + 300) % 300);
+      const iconEl = document.getElementById('main-icon');
+      const textEl = document.getElementById('main-timer-text');
 
-      if (mainRemaining > 290) {
-        if (mainIconEl.getAttribute('src') !== SUN_ICON) mainIconEl.src = SUN_ICON;
-        const sunCountdown = mainRemaining - 290;
-        mainTimerText.innerText = `00:${String(sunCountdown).padStart(2, '0')}`;
-      } else {
-        if (mainIconEl.getAttribute('src') !== MOON_ICON) mainIconEl.src = MOON_ICON;
-        const mainMins = Math.floor(mainRemaining / 60);
-        const mainSecs = mainRemaining % 60;
-        mainTimerText.innerText = `${String(mainMins).padStart(2, '0')}:${String(mainSecs).padStart(2, '0')}`;
-      }
-
-      // 2. TIMER 1 (30-Min Event A)
-      const t1Remaining = 1800 - ((((adjustedSeconds + 900) % 1800) + 1800) % 1800);
-      const t1Mins = Math.floor(t1Remaining / 60);
-      const t1Secs = t1Remaining % 60;
-      document.getElementById('timer1-text').innerText = `${String(t1Mins).padStart(2, '0')}:${String(t1Secs).padStart(2, '0')}`;
-
-      // 3. TIMER 2 (30-Min Event B)
-      const t2Remaining = 1800 - ((((adjustedSeconds) % 1800) + 1800) % 1800);
-      const t2Mins = Math.floor(t2Remaining / 60);
-      const t2Secs = t2Remaining % 60;
-      document.getElementById('timer2-text').innerText = `${String(t2Mins).padStart(2, '0')}:${String(t2Secs).padStart(2, '0')}`;
-    }
-
-    // Initialize and loop every second reliably
-    updateTimers();
-    setInterval(updateTimers, 1000);
-  </script>
-</body>
-</html>
+      if (mainRem > 290) {
+        if (!icon
