@@ -182,7 +182,7 @@
         <div id="timer1-text" class="timer-text">30:00</div>
       </div>
 
-      <!-- TIMER 2 (BOTTOM: ANCHORED 5s BEFORE HOUR/HALF-HOUR) -->
+      <!-- TIMER 2 (BOTTOM: RESETS 5s BEFORE EVERY HOUR AND HALF-HOUR) -->
       <div class="timer-card timer-secondary">
         <div class="icon-box">
           <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
@@ -197,34 +197,31 @@
   <script>
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
-    
-    // Final calibrated delay offset matching your exact phone display
-    const streamDelaySec = 64; 
-
-    function mod(n, m) {
-      return ((n % m) + m) % m;
-    }
 
     function tick() {
       try {
         const d = new Date();
-        const localMin = d.getMinutes();
-        const localSec = d.getSeconds();
+        const totalSec = (d.getHours() * 3600) + (d.getMinutes() * 60) + d.getSeconds();
 
-        const elapsedInHour = (localMin * 60) + localSec - streamDelaySec;
+        // Adding 5 seconds shifts the entire timeline forward, 
+        // causing the cycle to reset 5 seconds before every hour/block boundary.
+        const shiftedSec = totalSec + 5;
 
-        // Bottom Timer (Anchored 5 seconds before every hour and half-hour)
-        const t2Rem = 1800 - mod(elapsedInHour + 5, 1800);
+        const secIn30Min = shiftedSec % 1800;
+        const secIn5Min = shiftedSec % 300;
+
+        // 1. Bottom Timer: Resets 5 seconds before every hour and half-hour
+        const t2Rem = 1800 - secIn30Min;
         document.getElementById('timer2-text').innerText = 
           String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
 
-        // Middle Timer (Resets at :15 and :45 relative to the 5s early cycle)
-        const t1Rem = 1800 - mod(elapsedInHour + 5 + 900, 1800);
+        // 2. Middle Timer: Resets at :15 and :45 (15-min offset from bottom timer)
+        const t1Rem = 1800 - ((secIn30Min + 900) % 1800);
         document.getElementById('timer1-text').innerText = 
           String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
 
-        // Main 5-Min Timer (Synced to the same 5s early anchor)
-        const mainRem = 300 - mod(elapsedInHour + 5, 300);
+        // 3. Main 5-Minute Timer: Resets 5 seconds before every 5-min mark
+        const mainRem = 300 - secIn5Min;
         const iconEl = document.getElementById('main-icon');
         const textEl = document.getElementById('main-timer-text');
 
