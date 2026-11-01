@@ -182,7 +182,7 @@
       <!-- MAIN 5-MINUTE GAME TIMER -->
       <div class="timer-card timer-main">
         <div class="icon-box">
-          <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon">
+          <img id="main-icon" class="timer-icon" src="" alt="Main Icon">
         </div>
         <div id="main-timer-text" class="timer-text">05:00</div>
       </div>
@@ -208,9 +208,9 @@
   </div>
 
   <script>
-    const SUN_ICON = 'sun_icon.jpg';
-    const MOON_ICON = 'moon_icon.jpg';
-    let lastActiveIcon = '';
+    // Embedded inline icons so nothing fails to load
+    const SUN_SVG = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23d97706"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+    const MOON_SVG = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23334155"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 
     function updateTimers() {
       try {
@@ -225,15 +225,11 @@
         document.getElementById('main-timer-text').innerText = 
           (mainMins < 10 ? '0' : '') + mainMins + ':' + (mainSecs < 10 ? '0' : '') + mainSecs;
 
-        // Dynamic Icon Logic: Sun from 5:00 to 4:49, Moon otherwise
+        // Icon logic
         const mainIconEl = document.getElementById('main-icon');
-        const targetIcon = (mainRemaining >= 289) ? SUN_ICON : MOON_ICON;
-        if (lastActiveIcon !== targetIcon) {
-          mainIconEl.src = targetIcon;
-          lastActiveIcon = targetIcon;
-        }
+        mainIconEl.src = (mainRemaining >= 289) ? SUN_SVG : MOON_SVG;
 
-        // 2. TIMER 1 (30-Min Event - 15m/45m marks)
+        // 2. TIMER 1 (30-Min Event)
         const offsetTimer1 = (totalSeconds + 900) % 1800;
         const t1Remaining = 1800 - offsetTimer1;
         const t1Mins = Math.floor(t1Remaining / 60);
@@ -241,7 +237,7 @@
         document.getElementById('timer1-text').innerText = 
           (t1Mins < 10 ? '0' : '') + t1Mins + ':' + (t1Secs < 10 ? '0' : '') + t1Secs;
 
-        // 3. TIMER 2 (30-Min Event - 00m/30m marks)
+        // 3. TIMER 2 (30-Min Event)
         const offsetTimer2 = totalSeconds % 1800;
         const t2Remaining = 1800 - offsetTimer2;
         const t2Mins = Math.floor(t2Remaining / 60);
@@ -254,6 +250,7 @@
       }
     }
 
+    // Run immediately and every second
     updateTimers();
     setInterval(updateTimers, 1000);
   </script>
