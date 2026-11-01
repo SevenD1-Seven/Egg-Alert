@@ -184,7 +184,7 @@
         <div class="icon-box">
           <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon">
         </div>
-        <div id="main-timer-text" class="timer-text">05:00</div>
+        <div id="main-timer-text" class="timer-text">00:10</div>
       </div>
 
       <!-- TIMER 1 (30-MIN EVENT SPAWN A) -->
@@ -211,55 +211,11 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
 
-    // ADJUST THIS NUMBER IF IT'S OFF:
-    // Negative numbers shift the timer down (subtracts seconds).
-    // Positive numbers shift the timer up (adds seconds).
-    const TIMING_OFFSET = -5; 
+    // LATENCY CALIBRATION OFFSET (in seconds)
+    // Adjust by exact single seconds to sync perfectly with in-game clock.
+    let LATENCY_OFFSET = 0; 
 
     function updateTimers() {
       try {
         const now = new Date();
-        const totalSeconds = (now.getMinutes() * 60) + now.getSeconds() + TIMING_OFFSET;
-
-        // 1. MAIN 5-MINUTE TIMER
-        const offsetMain = ((totalSeconds % 300) + 300) % 300;
-        const mainRemaining = 300 - offsetMain;
-        const mainMins = Math.floor(mainRemaining / 60);
-        const mainSecs = mainRemaining % 60;
-        document.getElementById('main-timer-text').innerText = 
-          (mainMins < 10 ? '0' : '') + mainMins + ':' + (mainSecs < 10 ? '0' : '') + mainSecs;
-
-        // Icon logic: Sun from 5:00 to 4:49, Moon otherwise
-        const mainIconEl = document.getElementById('main-icon');
-        if (mainRemaining >= 289) {
-          if (mainIconEl.getAttribute('src') !== SUN_ICON) mainIconEl.src = SUN_ICON;
-        } else {
-          if (mainIconEl.getAttribute('src') !== MOON_ICON) mainIconEl.src = MOON_ICON;
-        }
-
-        // 2. TIMER 1 (30-Min Event)
-        const offsetTimer1 = (((totalSeconds + 900) % 1800) + 1800) % 1800;
-        const t1Remaining = 1800 - offsetTimer1;
-        const t1Mins = Math.floor(t1Remaining / 60);
-        const t1Secs = t1Remaining % 60;
-        document.getElementById('timer1-text').innerText = 
-          (t1Mins < 10 ? '0' : '') + t1Mins + ':' + (t1Secs < 10 ? '0' : '') + t1Secs;
-
-        // 3. TIMER 2 (30-Min Event)
-        const offsetTimer2 = ((totalSeconds % 1800) + 1800) % 1800;
-        const t2Remaining = 1800 - offsetTimer2;
-        const t2Mins = Math.floor(t2Remaining / 60);
-        const t2Secs = t2Remaining % 60;
-        document.getElementById('timer2-text').innerText = 
-          (t2Mins < 10 ? '0' : '') + t2Mins + ':' + (t2Secs < 10 ? '0' : '') + t2Secs;
-
-      } catch (err) {
-        console.error('Timer error:', err);
-      }
-    }
-
-    updateTimers();
-    setInterval(updateTimers, 1000);
-  </script>
-</body>
-</html>
+        const rawSeconds = (now.getMinutes()
