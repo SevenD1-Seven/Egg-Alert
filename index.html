@@ -67,33 +67,34 @@
   <script>
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
+    
+    // Confirmed broadcast delay offset put back in
+    const streamDelaySec = 23; 
 
     function tick() {
       try {
-        const now = new Date();
-        const m = now.getMinutes();
-        const s = now.getSeconds();
-        const totalSecIntoHour = (m * 60) + s;
+        const d = new Date();
+        const totalSec = (d.getHours() * 3600) + (d.getMinutes() * 60) + d.getSeconds() - streamDelaySec;
 
-        // --- BOTTOM TIMER (Resets 5s before every hour and half-hour, i.e., at :25 and :55 of each half-hour block) ---
-        // Each 30-min block is 1800 seconds. The reset target is second 1795 (which is 5s before the 1800s mark).
-        let t2Elapsed = totalSecIntoHour % 1800;
-        let t2Rem = 1795 - t2Elapsed;
+        const secIn30Min = totalSec % 1800;
+        const secIn5Min = totalSec % 300;
+
+        // Bottom Timer: Resets 5 seconds before every hour and half-hour (:55 and :25 past)
+        let t2Rem = 1795 - secIn30Min;
         if (t2Rem < 0) t2Rem += 1800;
-
         document.getElementById('timer2-text').innerText = 
           String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
 
-        // --- MIDDLE TIMER (Resets at :15 and :45 of every hour -> target second 895) ---
-        let t1Elapsed = totalSecIntoHour % 1800;
-        let t1Rem = 895 - t1Elapsed;
+        // Middle Timer: Resets at :15 and :45
+        let t1Rem = 895 - secIn30Min;
         if (t1Rem < 0) t1Rem += 1800;
-
         document.getElementById('timer1-text').innerText = 
           String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
 
-        // --- MAIN 5-MIN TIMER (Resets every 5 minutes -> 300s block) ---
-        let mainRem = 300 - (totalSecIntoHour % 300);
+        // Main 5-Minute Timer: Resets 5 seconds before every 5-min mark
+        let mainRem = 295 - secIn5Min;
+        if (mainRem < 0) mainRem += 300;
+
         const iconEl = document.getElementById('main-icon');
         const textEl = document.getElementById('main-timer-text');
 
@@ -103,9 +104,9 @@
           textEl.innerText = '00:' + String(sunCount).padStart(2, '0');
         } else {
           if (!iconEl.src.includes(MOON_ICON)) iconEl.src = MOON_ICON;
-          const min = Math.floor(mainRem / 60);
-          const sec = mainRem % 60;
-          textEl.innerText = String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+          const m = Math.floor(mainRem / 60);
+          const s = mainRem % 60;
+          textEl.innerText = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
         }
 
       } catch (err) {
