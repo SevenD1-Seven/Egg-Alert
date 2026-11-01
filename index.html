@@ -48,7 +48,6 @@
         inset -2px -2px 3px rgba(0, 0, 0, 0.8);
     }
 
-    /* Background GIF Container inside Banners */
     .banner-bg {
       position: absolute;
       top: 0;
@@ -75,7 +74,7 @@
       display: inline-block;
       font-size: 24px;
       font-weight: 900;
-      color: #ff1100; /* Big Red Text */
+      color: #ff1100;
       text-transform: uppercase;
       letter-spacing: 1px;
       text-shadow: 2px 2px 4px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
@@ -114,13 +113,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
     }
 
     .timer-icon {
+      width: 100%;
+      height: 100%;
       object-fit: contain;
     }
 
-    /* MAIN 5-MIN TIMER (BIGGER, BOLD BLACK) */
+    /* MAIN 5-MIN TIMER */
     .timer-main {
       border: 3px solid #ffcc00;
       background: rgba(255, 204, 0, 0.9);
@@ -130,29 +134,23 @@
     .timer-main .timer-text {
       font-size: 38px;
       font-weight: 900;
-      color: #000000; /* Bold Black Text */
-      text-shadow: none;
+      color: #000000;
     }
 
-    .timer-main .timer-icon {
-      width: 48px;
-      height: 48px;
-    }
-
-    /* SECONDARY 30-MIN TIMERS (WHITE TEXT, BLACK OUTLINE) */
+    /* SECONDARY 30-MIN TIMERS */
     .timer-secondary .timer-text {
       font-size: 28px;
       font-weight: 800;
-      color: #ffffff; /* White Text */
+      color: #ffffff;
       text-shadow: 
         -2px -2px 0 #000,  
          2px -2px 0 #000,
         -2px  2px 0 #000,
          2px  2px 0 #000,
-         0px  3px 5px rgba(0,0,0,0.8); /* Black Outline */
+         0px  3px 5px rgba(0,0,0,0.8);
     }
 
-    .timer-secondary .timer-icon {
+    .timer-secondary .icon-box {
       width: 36px;
       height: 36px;
     }
@@ -164,7 +162,7 @@
     
     <!-- BANNER 1 (SPANISH) -->
     <div class="banner-card">
-      <img class="banner-bg" src="banner1_bg.gif" alt="Banner 1 BG">
+      <img class="banner-bg" src="banner1_bg.gif" alt="Banner 1 BG" onerror="this.style.display='none'">
       <div class="marquee-wrapper">
         <div class="marquee-text">
           ¿Buscas alguna fusión? Deja tu user y un comentario.
@@ -174,7 +172,7 @@
 
     <!-- BANNER 2 (ENGLISH) -->
     <div class="banner-card">
-      <img class="banner-bg" src="banner2_bg.gif" alt="Banner 2 BG">
+      <img class="banner-bg" src="banner2_bg.gif" alt="Banner 2 BG" onerror="this.style.display='none'">
       <div class="marquee-wrapper">
         <div class="marquee-text">
           Looking for a merge? Leave your user and a comment.
@@ -188,11 +186,76 @@
       <!-- MAIN 5-MINUTE GAME TIMER -->
       <div class="timer-card timer-main">
         <div class="icon-box">
-          <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon">
+          <img id="main-icon" class="timer-icon" src="" alt="Main Icon">
         </div>
         <div id="main-timer-text" class="timer-text">05:00</div>
       </div>
 
       <!-- TIMER 1 (30-MIN EVENT SPAWN A) -->
       <div class="timer-card timer-secondary">
-        <div class="icon-
+        <div class="icon-box">
+          <img class="timer-icon" src="game_icon1.jpg" alt="Event 1" onerror="this.style.display='none'">
+        </div>
+        <div id="timer1-text" class="timer-text">30:00</div>
+      </div>
+
+      <!-- TIMER 2 (30-MIN EVENT SPAWN B) -->
+      <div class="timer-card timer-secondary">
+        <div class="icon-box">
+          <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
+        </div>
+        <div id="timer2-text" class="timer-text">30:00</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // Bulletproof icons using encoded graphics so they never break while files upload
+    const SUN_ICON = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23d97706"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+    const MOON_ICON = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23475569"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
+    function updateTimers() {
+      const now = new Date();
+      const totalSeconds = (now.getMinutes() * 60) + now.getSeconds();
+
+      // 1. MAIN 5-MINUTE TIMER (5s offset)
+      const offsetMain = (totalSeconds + 5) % 300;
+      const mainRemaining = 300 - offsetMain;
+
+      const mainMins = Math.floor(mainRemaining / 60);
+      const mainSecs = mainRemaining % 60;
+      document.getElementById('main-timer-text').innerText = 
+        `${String(mainMins).padStart(2, '0')}:${String(mainSecs).padStart(2, '0')}`;
+
+      // Sun icon from 5:00 to 4:49 (mainRemaining >= 289), Moon otherwise
+      const mainIconEl = document.getElementById('main-icon');
+      if (mainRemaining >= 289) {
+        mainIconEl.src = SUN_ICON;
+      } else {
+        mainIconEl.src = MOON_ICON;
+      }
+
+      // 2. TIMER 1 (30-Min Event - Offset 15m 5s)
+      const offsetTimer1 = (totalSeconds + 900 + 5) % 1800;
+      const t1Remaining = 1800 - offsetTimer1;
+      const t1Mins = Math.floor(t1Remaining / 60);
+      const t1Secs = t1Remaining % 60;
+      document.getElementById('timer1-text').innerText = 
+        `${String(t1Mins).padStart(2, '0')}:${String(t1Secs).padStart(2, '0')}`;
+
+      // 3. TIMER 2 (30-Min Event - Offset 5s)
+      const offsetTimer2 = (totalSeconds + 5) % 1800;
+      const t2Remaining = 1800 - offsetTimer2;
+      const t2Mins = Math.floor(t2Remaining / 60);
+      const t2Secs = t2Remaining % 60;
+      document.getElementById('timer2-text').innerText = 
+        `${String(t2Mins).padStart(2, '0')}:${String(t2Secs).padStart(2, '0')}`;
+    }
+
+    updateTimers();
+    setInterval(updateTimers, 1000);
+  </script>
+</body>
+</html>
