@@ -182,7 +182,7 @@
         <div id="timer1-text" class="timer-text">30:00</div>
       </div>
 
-      <!-- TIMER 2 (BOTTOM: RESETS AT :00 AND :30) -->
+      <!-- TIMER 2 (BOTTOM: ANCHORED 5s BEFORE HOUR/HALF-HOUR) -->
       <div class="timer-card timer-secondary">
         <div class="icon-box">
           <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
@@ -198,7 +198,6 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    // Locked down final delay offset
     const streamDelaySec = 23; 
 
     function mod(n, m) {
@@ -211,11 +210,21 @@
         const localMin = d.getMinutes();
         const localSec = d.getSeconds();
 
-        // Total seconds elapsed in current hour, adjusted for broadcast delay
         const elapsedInHour = (localMin * 60) + localSec - streamDelaySec;
 
-        // 1. Main Timer (5-minute cycle)
-        const mainRem = 300 - mod(elapsedInHour, 300);
+        // 3. Bottom Timer (Anchored to reset 5 seconds before every hour and half-hour)
+        // Adding 5 seconds here shifts its entire 30-min cycle forward so it hits 00:00 at :55 and :25
+        const t2Rem = 1800 - mod(elapsedInHour + 5, 1800);
+        document.getElementById('timer2-text').innerText = 
+          String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
+
+        // 2. Middle Timer (Resets 15 mins offset from bottom timer -> at :10 and :40 relative to shifted cycle)
+        const t1Rem = 1800 - mod(elapsedInHour + 5 + 900, 1800);
+        document.getElementById('timer1-text').innerText = 
+          String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
+
+        // 1. Main Timer (5-minute cycle synced to the same anchor)
+        const mainRem = 300 - mod(elapsedInHour + 5, 300);
         const iconEl = document.getElementById('main-icon');
         const textEl = document.getElementById('main-timer-text');
 
@@ -229,16 +238,6 @@
           const s = mainRem % 60;
           textEl.innerText = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
         }
-
-        // 2. Middle Timer (Resets at :15 and :45)
-        const t1Rem = 1800 - mod(elapsedInHour + 900, 1800);
-        document.getElementById('timer1-text').innerText = 
-          String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
-
-        // 3. Bottom Timer (Resets at :00 and :30)
-        const t2Rem = 1800 - mod(elapsedInHour, 1800);
-        document.getElementById('timer2-text').innerText = 
-          String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
 
       } catch (err) {
         console.error("Tick error:", err);
