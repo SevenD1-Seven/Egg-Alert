@@ -198,15 +198,15 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    // Direct seconds offset. If overlay is ahead of game, make this positive (e.g., 10, 20). 
-    // If overlay is behind game, make this negative (e.g., -10, -20).
-    let timerOffsetSec = -585; 
+    // Exact second offset. Because this uses UTC time, changing this by '5' shifts it by precisely 5 seconds.
+    const timerOffsetSec = 0; 
 
     function tick() {
       try {
+        // Pure universal UTC seconds timestamp + clean offset
         const nowSec = Math.floor(Date.now() / 1000) + timerOffsetSec;
 
-        // Clean positive modulo for 5-min (300s) main timer
+        // Main Timer (5-min interval = 300s)
         const mainRem = 300 - (nowSec % 300);
         const iconEl = document.getElementById('main-icon');
         const textEl = document.getElementById('main-timer-text');
