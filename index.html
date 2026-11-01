@@ -57,7 +57,7 @@
       height: 100%;
       object-fit: cover;
       z-index: 1;
-      opacity: 0.6; /* Adjust opacity to make red text pop */
+      opacity: 0.6;
     }
 
     .marquee-wrapper {
@@ -164,7 +164,6 @@
     
     <!-- BANNER 1 (SPANISH) -->
     <div class="banner-card">
-      <!-- Replace with your GIF URL or local file -->
       <img class="banner-bg" src="banner1_bg.gif" alt="Banner 1 BG">
       <div class="marquee-wrapper">
         <div class="marquee-text">
@@ -175,7 +174,6 @@
 
     <!-- BANNER 2 (ENGLISH) -->
     <div class="banner-card">
-      <!-- Replace with your GIF URL or local file -->
       <img class="banner-bg" src="banner2_bg.gif" alt="Banner 2 BG">
       <div class="marquee-wrapper">
         <div class="marquee-text">
@@ -187,93 +185,14 @@
     <!-- TIMERS SECTION -->
     <div class="timers-container">
 
-      <!-- MAIN 5-MINUTE GAME TIMER (BIGGEST) -->
+      <!-- MAIN 5-MINUTE GAME TIMER -->
       <div class="timer-card timer-main">
         <div class="icon-box">
-          <img id="main-icon" class="timer-icon" src="sun_icon.png" alt="Main Icon">
+          <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon">
         </div>
         <div id="main-timer-text" class="timer-text">05:00</div>
       </div>
 
       <!-- TIMER 1 (30-MIN EVENT SPAWN A) -->
       <div class="timer-card timer-secondary">
-        <div class="icon-box">
-          <img id="event1-icon" class="timer-icon" src="game_icon1.jpg" alt="Event 1 Icon">
-        </div>
-        <div id="timer1-text" class="timer-text">30:00</div>
-      </div>
-
-      <!-- TIMER 2 (30-MIN EVENT SPAWN B) -->
-      <div class="timer-card timer-secondary">
-        <div class="icon-box">
-          <img id="event2-icon" class="timer-icon" src="game_icon2.jpg" alt="Event 2 Icon">
-        </div>
-        <div id="timer2-text" class="timer-text">30:00</div>
-      </div>
-
-    </div>
-
-  </div>
-
-  <script>
-    // ICON CONFIGURATION
-    // You can replace these image links with your own local file paths or web links
-    const SUN_ICON = 'https://img.icons8.com/emoji/96/sun-emoji.png';
-    const MOON_ICON = 'https://img.icons8.com/emoji/96/cloud-with-lightning-and-rain.png'; // or moon/cloud icon
-
-    function updateTimers() {
-      const now = new Date();
-      const totalSeconds = (now.getMinutes() * 60) + now.getSeconds();
-
-      // ========================================================
-      // 1. MAIN 5-MINUTE TIMER (Starts 5s before :00, :05, :10...)
-      // ========================================================
-      const offsetMain = (totalSeconds + 5) % 300; // 300s = 5 minutes
-      const mainRemaining = 300 - offsetMain;
-
-      const mainMins = Math.floor(mainRemaining / 60);
-      const mainSecs = mainRemaining % 60;
-      document.getElementById('main-timer-text').innerText = 
-        `${String(mainMins).padStart(2, '0')}:${String(mainSecs).padStart(2, '0')}`;
-
-      // Dynamic Icon Logic from Video:
-      // 5:00 to 4:49 (Top 11 secs) = SUN ICON
-      // 4:50 to 0:00 = MOON ICON
-      const mainIconEl = document.getElementById('main-icon');
-      if (mainRemaining > 289) { // 289s is 4:49
-        mainIconEl.src = SUN_ICON;
-      } else {
-        mainIconEl.src = MOON_ICON;
-      }
-
-      // ========================================================
-      // 2. TIMER 1 (30-Min Event - Starts 5s before :15 & :45)
-      // ========================================================
-      // Shift timeline by 15 mins (900s) + 5s offset
-      const offsetTimer1 = (totalSeconds + 900 + 5) % 1800; // 1800s = 30 minutes
-      const t1Remaining = 1800 - offsetTimer1;
-
-      const t1Mins = Math.floor(t1Remaining / 60);
-      const t1Secs = t1Remaining % 60;
-      document.getElementById('timer1-text').innerText = 
-        `${String(t1Mins).padStart(2, '0')}:${String(t1Secs).padStart(2, '0')}`;
-
-      // ========================================================
-      // 3. TIMER 2 (30-Min Event - Starts 5s before :00 & :30)
-      // ========================================================
-      // Shift timeline by 5s offset
-      const offsetTimer2 = (totalSeconds + 5) % 1800;
-      const t2Remaining = 1800 - offsetTimer2;
-
-      const t2Mins = Math.floor(t2Remaining / 60);
-      const t2Secs = t2Remaining % 60;
-      document.getElementById('timer2-text').innerText = 
-        `${String(t2Mins).padStart(2, '0')}:${String(t2Secs).padStart(2, '0')}`;
-    }
-
-    // Run immediately and update every second
-    updateTimers();
-    setInterval(updateTimers, 1000);
-  </script>
-</body>
-</html>
+        <div class="icon-
