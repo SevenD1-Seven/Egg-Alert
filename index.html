@@ -166,7 +166,7 @@
     <!-- TIMERS SECTION -->
     <div class="timers-container">
 
-      <!-- MAIN 5-MINUTE GAME TIMER (-5s offset included) -->
+      <!-- MAIN 5-MINUTE GAME TIMER -->
       <div class="timer-card timer-main">
         <div class="icon-box">
           <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon" onerror="this.style.display='none'">
@@ -197,7 +197,9 @@
   <script>
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
-    const LATENCY_OFFSET = -5; 
+    
+    // Adjusted by -25 seconds to account for the 20s stream delay
+    const LATENCY_OFFSET = -25; 
 
     function tick() {
       try {
