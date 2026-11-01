@@ -198,16 +198,16 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    // Adjusted by -116 seconds to match the in-game clock perfectly
-    const LATENCY_OFFSET = -130; 
+    // Now true absolute seconds! Start at 0. If off by X seconds, just set this to X or -X.
+    let LATENCY_OFFSET = 0; 
 
     function tick() {
       try {
-        const d = new Date();
-        const sec = (d.getMinutes() * 60) + d.getSeconds() + LATENCY_OFFSET;
+        // Absolute Unix Epoch seconds
+        const totalSeconds = Math.floor(Date.now() / 1000) + LATENCY_OFFSET;
 
-        // Main Timer (5-min interval)
-        const mainRem = 300 - (((sec % 300) + 300) % 300);
+        // Main Timer (5-min interval = 300s)
+        const mainRem = 300 - (totalSeconds % 300);
         const iconEl = document.getElementById('main-icon');
         const textEl = document.getElementById('main-timer-text');
 
@@ -222,13 +222,13 @@
           textEl.innerText = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
         }
 
-        // Event Timer 1 (30-min interval, offset 15m)
-        const t1Rem = 1800 - ((((sec + 900) % 1800) + 1800) % 1800);
+        // Event Timer 1 (30-min interval = 1800s, offset 900s)
+        const t1Rem = 1800 - ((totalSeconds + 900) % 1800);
         document.getElementById('timer1-text').innerText = 
           String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
 
-        // Event Timer 2 (30-min interval)
-        const t2Rem = 1800 - ((((sec) % 1800) + 1800) % 1800);
+        // Event Timer 2 (30-min interval = 1800s)
+        const t2Rem = 1800 - (totalSeconds % 1800);
         document.getElementById('timer2-text').innerText = 
           String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
       } catch (err) {
