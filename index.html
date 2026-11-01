@@ -210,12 +210,45 @@
   <script>
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
-
-    // LATENCY CALIBRATION OFFSET (in seconds)
-    // Adjust by exact single seconds to sync perfectly with in-game clock.
     let LATENCY_OFFSET = 0; 
 
     function updateTimers() {
-      try {
-        const now = new Date();
-        const rawSeconds = (now.getMinutes()
+      const now = new Date();
+      const rawSeconds = (now.getMinutes() * 60) + now.getSeconds();
+      const adjustedSeconds = rawSeconds + LATENCY_OFFSET;
+
+      // 1. MAIN 5-MIN TIMER
+      const mainRemaining = 300 - (((adjustedSeconds % 300) + 300) % 300);
+      const mainIconEl = document.getElementById('main-icon');
+      const mainTimerText = document.getElementById('main-timer-text');
+
+      if (mainRemaining > 290) {
+        if (mainIconEl.getAttribute('src') !== SUN_ICON) mainIconEl.src = SUN_ICON;
+        const sunCountdown = mainRemaining - 290;
+        mainTimerText.innerText = `00:${String(sunCountdown).padStart(2, '0')}`;
+      } else {
+        if (mainIconEl.getAttribute('src') !== MOON_ICON) mainIconEl.src = MOON_ICON;
+        const mainMins = Math.floor(mainRemaining / 60);
+        const mainSecs = mainRemaining % 60;
+        mainTimerText.innerText = `${String(mainMins).padStart(2, '0')}:${String(mainSecs).padStart(2, '0')}`;
+      }
+
+      // 2. TIMER 1 (30-Min Event A)
+      const t1Remaining = 1800 - ((((adjustedSeconds + 900) % 1800) + 1800) % 1800);
+      const t1Mins = Math.floor(t1Remaining / 60);
+      const t1Secs = t1Remaining % 60;
+      document.getElementById('timer1-text').innerText = `${String(t1Mins).padStart(2, '0')}:${String(t1Secs).padStart(2, '0')}`;
+
+      // 3. TIMER 2 (30-Min Event B)
+      const t2Remaining = 1800 - ((((adjustedSeconds) % 1800) + 1800) % 1800);
+      const t2Mins = Math.floor(t2Remaining / 60);
+      const t2Secs = t2Remaining % 60;
+      document.getElementById('timer2-text').innerText = `${String(t2Mins).padStart(2, '0')}:${String(t2Secs).padStart(2, '0')}`;
+    }
+
+    // Initialize and loop every second reliably
+    updateTimers();
+    setInterval(updateTimers, 1000);
+  </script>
+</body>
+</html>
