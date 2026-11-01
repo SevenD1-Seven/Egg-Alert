@@ -19,7 +19,6 @@
       color: #fff;
     }
 
-    /* RIGHT COLUMN CONTAINER */
     .right-sidebar {
       position: absolute;
       top: 20px;
@@ -28,18 +27,15 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      align-items: stretch;
     }
 
-    /* SCROLLING BANNERS */
+    /* BANNERS */
     .banner-card {
       position: relative;
       height: 75px;
       border-radius: 12px;
       overflow: hidden;
       background-color: #111;
-      
-      /* Metallic Blue/Aqua Tubular Border */
       border: 4px solid #00d2ff;
       box-shadow: 
         inset 0 0 6px #0088cc,
@@ -162,7 +158,7 @@
     
     <!-- BANNER 1 (SPANISH) -->
     <div class="banner-card">
-      <img class="banner-bg" src="banner1_bg.gif" alt="Banner 1 BG" onerror="this.style.display='none'">
+      <img class="banner-bg" src="banner1_bg.gif" alt="" onerror="this.style.display='none'">
       <div class="marquee-wrapper">
         <div class="marquee-text">
           ¿Buscas alguna fusión? Deja tu user y un comentario.
@@ -172,7 +168,7 @@
 
     <!-- BANNER 2 (ENGLISH) -->
     <div class="banner-card">
-      <img class="banner-bg" src="banner2_bg.gif" alt="Banner 2 BG" onerror="this.style.display='none'">
+      <img class="banner-bg" src="banner2_bg.gif" alt="" onerror="this.style.display='none'">
       <div class="marquee-wrapper">
         <div class="marquee-text">
           Looking for a merge? Leave your user and a comment.
@@ -186,7 +182,7 @@
       <!-- MAIN 5-MINUTE GAME TIMER -->
       <div class="timer-card timer-main">
         <div class="icon-box">
-          <img id="main-icon" class="timer-icon" src="" alt="Main Icon">
+          <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon">
         </div>
         <div id="main-timer-text" class="timer-text">05:00</div>
       </div>
@@ -212,46 +208,50 @@
   </div>
 
   <script>
-    // Bulletproof icons using encoded graphics so they never break while files upload
-    const SUN_ICON = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23d97706"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
-    const MOON_ICON = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23475569"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+    // Filenames for your custom images
+    const SUN_ICON = 'sun_icon.jpg';
+    const MOON_ICON = 'moon_icon.jpg';
 
     function updateTimers() {
-      const now = new Date();
-      const totalSeconds = (now.getMinutes() * 60) + now.getSeconds();
+      try {
+        const now = new Date();
+        const totalSeconds = (now.getMinutes() * 60) + now.getSeconds();
 
-      // 1. MAIN 5-MINUTE TIMER (5s offset)
-      const offsetMain = (totalSeconds + 5) % 300;
-      const mainRemaining = 300 - offsetMain;
+        // 1. MAIN 5-MINUTE TIMER (5s offset)
+        const offsetMain = (totalSeconds + 5) % 300;
+        const mainRemaining = 300 - offsetMain;
+        const mainMins = Math.floor(mainRemaining / 60);
+        const mainSecs = mainRemaining % 60;
+        document.getElementById('main-timer-text').innerText = 
+          (mainMins < 10 ? '0' : '') + mainMins + ':' + (mainSecs < 10 ? '0' : '') + mainSecs;
 
-      const mainMins = Math.floor(mainRemaining / 60);
-      const mainSecs = mainRemaining % 60;
-      document.getElementById('main-timer-text').innerText = 
-        `${String(mainMins).padStart(2, '0')}:${String(mainSecs).padStart(2, '0')}`;
+        // Dynamic Icon Logic: Sun from 5:00 to 4:49 (>= 289s), Moon for the rest
+        const mainIconEl = document.getElementById('main-icon');
+        if (mainRemaining >= 289) {
+          if (mainIconEl.getAttribute('src') !== SUN_ICON) mainIconEl.src = SUN_ICON;
+        } else {
+          if (mainIconEl.getAttribute('src') !== MOON_ICON) mainIconEl.src = MOON_ICON;
+        }
 
-      // Sun icon from 5:00 to 4:49 (mainRemaining >= 289), Moon otherwise
-      const mainIconEl = document.getElementById('main-icon');
-      if (mainRemaining >= 289) {
-        mainIconEl.src = SUN_ICON;
-      } else {
-        mainIconEl.src = MOON_ICON;
+        // 2. TIMER 1 (30-Min Event - Offset 15m 5s)
+        const offsetTimer1 = (totalSeconds + 900 + 5) % 1800;
+        const t1Remaining = 1800 - offsetTimer1;
+        const t1Mins = Math.floor(t1Remaining / 60);
+        const t1Secs = t1Remaining % 60;
+        document.getElementById('timer1-text').innerText = 
+          (t1Mins < 10 ? '0' : '') + t1Mins + ':' + (t1Secs < 10 ? '0' : '') + t1Secs;
+
+        // 3. TIMER 2 (30-Min Event - Offset 5s)
+        const offsetTimer2 = (totalSeconds + 5) % 1800;
+        const t2Remaining = 1800 - offsetTimer2;
+        const t2Mins = Math.floor(t2Remaining / 60);
+        const t2Secs = t2Remaining % 60;
+        document.getElementById('timer2-text').innerText = 
+          (t2Mins < 10 ? '0' : '') + t2Mins + ':' + (t2Secs < 10 ? '0' : '') + t2Secs;
+
+      } catch (err) {
+        console.error('Timer error:', err);
       }
-
-      // 2. TIMER 1 (30-Min Event - Offset 15m 5s)
-      const offsetTimer1 = (totalSeconds + 900 + 5) % 1800;
-      const t1Remaining = 1800 - offsetTimer1;
-      const t1Mins = Math.floor(t1Remaining / 60);
-      const t1Secs = t1Remaining % 60;
-      document.getElementById('timer1-text').innerText = 
-        `${String(t1Mins).padStart(2, '0')}:${String(t1Secs).padStart(2, '0')}`;
-
-      // 3. TIMER 2 (30-Min Event - Offset 5s)
-      const offsetTimer2 = (totalSeconds + 5) % 1800;
-      const t2Remaining = 1800 - offsetTimer2;
-      const t2Mins = Math.floor(t2Remaining / 60);
-      const t2Secs = t2Remaining % 60;
-      document.getElementById('timer2-text').innerText = 
-        `${String(t2Mins).padStart(2, '0')}:${String(t2Secs).padStart(2, '0')}`;
     }
 
     updateTimers();
