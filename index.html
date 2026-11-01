@@ -166,10 +166,10 @@
     <!-- TIMERS SECTION -->
     <div class="timers-container">
 
-      <!-- MAIN 5-MINUTE GAME TIMER -->
+      <!-- MAIN 5-MINUTE GAME TIMER (-5s offset included) -->
       <div class="timer-card timer-main">
         <div class="icon-box">
-          <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon">
+          <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon" onerror="this.style.display='none'">
         </div>
         <div id="main-timer-text" class="timer-text">00:10</div>
       </div>
@@ -197,39 +197,41 @@
   <script>
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
-    
-    // Adjusted by -15 seconds to sync right up with your in-game clock
     const LATENCY_OFFSET = -5; 
 
     function tick() {
-      const d = new Date();
-      const sec = (d.getMinutes() * 60) + d.getSeconds() + LATENCY_OFFSET;
+      try {
+        const d = new Date();
+        const sec = (d.getMinutes() * 60) + d.getSeconds() + LATENCY_OFFSET;
 
-      // Main Timer (5-min interval)
-      const mainRem = 300 - (((sec % 300) + 300) % 300);
-      const iconEl = document.getElementById('main-icon');
-      const textEl = document.getElementById('main-timer-text');
+        // Main Timer (5-min interval)
+        const mainRem = 300 - (((sec % 300) + 300) % 300);
+        const iconEl = document.getElementById('main-icon');
+        const textEl = document.getElementById('main-timer-text');
 
-      if (mainRem > 290) {
-        if (!iconEl.src.includes(SUN_ICON)) iconEl.src = SUN_ICON;
-        const sunCount = mainRem - 290;
-        textEl.innerText = '00:' + String(sunCount).padStart(2, '0');
-      } else {
-        if (!iconEl.src.includes(MOON_ICON)) iconEl.src = MOON_ICON;
-        const m = Math.floor(mainRem / 60);
-        const s = mainRem % 60;
-        textEl.innerText = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+        if (mainRem > 290) {
+          if (!iconEl.src.includes(SUN_ICON)) iconEl.src = SUN_ICON;
+          const sunCount = mainRem - 290;
+          textEl.innerText = '00:' + String(sunCount).padStart(2, '0');
+        } else {
+          if (!iconEl.src.includes(MOON_ICON)) iconEl.src = MOON_ICON;
+          const m = Math.floor(mainRem / 60);
+          const s = mainRem % 60;
+          textEl.innerText = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+        }
+
+        // Event Timer 1 (30-min interval, offset 15m)
+        const t1Rem = 1800 - ((((sec + 900) % 1800) + 1800) % 1800);
+        document.getElementById('timer1-text').innerText = 
+          String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
+
+        // Event Timer 2 (30-min interval)
+        const t2Rem = 1800 - ((((sec) % 1800) + 1800) % 1800);
+        document.getElementById('timer2-text').innerText = 
+          String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
+      } catch (err) {
+        console.error("Tick error:", err);
       }
-
-      // Event Timer 1 (30-min interval, offset 15m)
-      const t1Rem = 1800 - ((((sec + 900) % 1800) + 1800) % 1800);
-      document.getElementById('timer1-text').innerText = 
-        String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
-
-      // Event Timer 2 (30-min interval)
-      const t2Rem = 1800 - ((((sec) % 1800) + 1800) % 1800);
-      document.getElementById('timer2-text').innerText = 
-        String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
     }
 
     setInterval(tick, 1000);
