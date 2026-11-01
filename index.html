@@ -67,40 +67,23 @@
   <script>
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
-    
-    // Adjusted delay value down to pull overlay clock backward into sync
-    const streamDelaySec = 6; 
 
     function tick() {
       try {
         const d = new Date();
-        const totalSec = (d.getHours() * 3600) + (d.getMinutes() * 60) + d.getSeconds() - streamDelaySec;
+        const totalSec = (d.getHours() * 3600) + (d.getMinutes() * 60) + d.getSeconds();
 
-        const secIn30Min = totalSec % 1800;
+        // 5-min timer calculation matching game ticks
         const secIn5Min = totalSec % 300;
-
-        // Bottom Timer: Resets 5 seconds before every hour and half-hour (:55 and :25 past)
-        let t2Rem = 1795 - secIn30Min;
-        if (t2Rem < 0) t2Rem += 1800;
-        document.getElementById('timer2-text').innerText = 
-          String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
-
-        // Middle Timer: Resets at :15 and :45
-        let t1Rem = 895 - secIn30Min;
-        if (t1Rem < 0) t1Rem += 1800;
-        document.getElementById('timer1-text').innerText = 
-          String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
-
-        // Main 5-Minute Timer: Resets 5 seconds before every 5-min mark
-        let mainRem = 295 - secIn5Min;
-        if (mainRem < 0) mainRem += 300;
+        let mainRem = 300 - secIn5Min;
+        if (mainRem > 300) mainRem -= 300;
 
         const iconEl = document.getElementById('main-icon');
         const textEl = document.getElementById('main-timer-text');
 
-        if (mainRem > 290) {
+        if (mainRem > 295) {
           if (!iconEl.src.includes(SUN_ICON)) iconEl.src = SUN_ICON;
-          const sunCount = mainRem - 290;
+          const sunCount = 300 - mainRem;
           textEl.innerText = '00:' + String(sunCount).padStart(2, '0');
         } else {
           if (!iconEl.src.includes(MOON_ICON)) iconEl.src = MOON_ICON;
@@ -108,6 +91,17 @@
           const s = mainRem % 60;
           textEl.innerText = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
         }
+
+        // 30-min timers calculation
+        const secIn30Min = totalSec % 1800;
+        
+        let t2Rem = 1800 - secIn30Min;
+        document.getElementById('timer2-text').innerText = 
+          String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
+
+        let t1Rem = 1800 - ((secIn30Min + 900) % 1800);
+        document.getElementById('timer1-text').innerText = 
+          String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
 
       } catch (err) {
         console.error("Tick error:", err);
