@@ -68,7 +68,7 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    // Your exact fine-tuned precision offset
+    // High-precision background offset
     const streamDelaySec = -9.999; 
 
     function formatTimeWhole(totalSec) {
@@ -87,12 +87,12 @@
         const secIn30Min = totalSec % 1800;
         const secIn5Min = totalSec % 300;
 
-        // Bottom Timer: Resets 5 seconds before every hour and half-hour
+        // Bottom Timer
         let t2Rem = 1795 - secIn30Min;
         if (t2Rem < 0) t2Rem += 1800;
         document.getElementById('timer2-text').innerText = formatTimeWhole(t2Rem);
 
-        // Middle Timer: Resets at :15 and :45
+        // Middle Timer
         let t1Rem = 895 - secIn30Min;
         if (t1Rem < 0) t1Rem += 1800;
         document.getElementById('timer1-text').innerText = formatTimeWhole(t1Rem);
@@ -107,11 +107,11 @@
         let roundedMain = Math.round(mainRem);
         if (roundedMain >= 300) roundedMain = 0;
 
-        // Sun icon active during the 10-second window from 5:00 down to 4:51
-        // (secIn5Min goes from 290 up to 299, mapping countdown from 10 down to 1)
+        // Sun icon window with strictly rounded whole-second countdown
         if (secIn5Min >= 290) {
           if (!iconEl.src.includes(SUN_ICON)) iconEl.src = SUN_ICON;
-          let sunCount = 300 - secIn5Min;
+          let sunCount = Math.round(300 - secIn5Min);
+          if (sunCount > 10) sunCount = 10;
           textEl.innerText = '00:' + String(sunCount).padStart(2, '0');
         } else {
           if (!iconEl.src.includes(MOON_ICON)) iconEl.src = MOON_ICON;
