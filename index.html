@@ -198,7 +198,8 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    const streamDelaySec = 23; 
+    // Final calibrated delay offset matching your exact phone display
+    const streamDelaySec = 64; 
 
     function mod(n, m) {
       return ((n % m) + m) % m;
@@ -212,18 +213,17 @@
 
         const elapsedInHour = (localMin * 60) + localSec - streamDelaySec;
 
-        // 3. Bottom Timer (Anchored to reset 5 seconds before every hour and half-hour)
-        // Adding 5 seconds here shifts its entire 30-min cycle forward so it hits 00:00 at :55 and :25
+        // Bottom Timer (Anchored 5 seconds before every hour and half-hour)
         const t2Rem = 1800 - mod(elapsedInHour + 5, 1800);
         document.getElementById('timer2-text').innerText = 
           String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
 
-        // 2. Middle Timer (Resets 15 mins offset from bottom timer -> at :10 and :40 relative to shifted cycle)
+        // Middle Timer (Resets at :15 and :45 relative to the 5s early cycle)
         const t1Rem = 1800 - mod(elapsedInHour + 5 + 900, 1800);
         document.getElementById('timer1-text').innerText = 
           String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
 
-        // 1. Main Timer (5-minute cycle synced to the same anchor)
+        // Main 5-Min Timer (Synced to the same 5s early anchor)
         const mainRem = 300 - mod(elapsedInHour + 5, 300);
         const iconEl = document.getElementById('main-icon');
         const textEl = document.getElementById('main-timer-text');
