@@ -50,15 +50,15 @@
     <div class="timers-container">
       <div class="timer-card timer-main">
         <div class="icon-box"><img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon" onerror="this.style.display='none'"></div>
-        <div id="main-timer-text" class="timer-text">00:10</div>
+        <div id="main-timer-text" class="timer-text">00:10.00</div>
       </div>
       <div class="timer-card timer-secondary">
         <div class="icon-box"><img class="timer-icon" src="game_icon1.jpg" alt="Event 1" onerror="this.style.display='none'"></div>
-        <div id="timer1-text" class="timer-text">30:00</div>
+        <div id="timer1-text" class="timer-text">30:00.00</div>
       </div>
       <div class="timer-card timer-secondary">
         <div class="icon-box"><img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'"></div>
-        <div id="timer2-text" class="timer-text">30:00</div>
+        <div id="timer2-text" class="timer-text">30:00.00</div>
       </div>
     </div>
 
@@ -68,30 +68,37 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    // Calibrated broadcast delay offset accounting for the 30s gap
-    const streamDelaySec = -10;
+    // Your fine-tuned offset
+    const streamDelaySec = -9.8; 
+
+    function formatTimeWithDecimals(totalSec) {
+      if (totalSec < 0) totalSec = 0;
+      const m = Math.floor(totalSec / 60);
+      const s = totalSec % 60;
+      const secInt = Math.floor(s);
+      const dec = (s - secInt).toFixed(2).substring(1); // gets ".XX"
+      return String(m).padStart(2, '0') + ':' + String(secInt).padStart(2, '0') + dec;
+    }
 
     function tick() {
       try {
         const d = new Date();
-        const totalSec = (d.getHours() * 3600) + (d.getMinutes() * 60) + d.getSeconds() - streamDelaySec;
+        const totalSec = (d.getHours() * 3600) + (d.getMinutes() * 60) + (d.getSeconds() + (d.getMilliseconds() / 1000)) - streamDelaySec;
 
         const secIn30Min = totalSec % 1800;
         const secIn5Min = totalSec % 300;
 
-        // Bottom Timer: Resets 5 seconds before every hour and half-hour (:55 and :25 past)
+        // Bottom Timer: Resets 5 seconds before every hour and half-hour
         let t2Rem = 1795 - secIn30Min;
         if (t2Rem < 0) t2Rem += 1800;
-        document.getElementById('timer2-text').innerText = 
-          String(Math.floor(t2Rem / 60)).padStart(2, '0') + ':' + String(t2Rem % 60).padStart(2, '0');
+        document.getElementById('timer2-text').innerText = formatTimeWithDecimals(t2Rem);
 
         // Middle Timer: Resets at :15 and :45
         let t1Rem = 895 - secIn30Min;
         if (t1Rem < 0) t1Rem += 1800;
-        document.getElementById('timer1-text').innerText = 
-          String(Math.floor(t1Rem / 60)).padStart(2, '0') + ':' + String(t1Rem % 60).padStart(2, '0');
+        document.getElementById('timer1-text').innerText = formatTimeWithDecimals(t1Rem);
 
-        // Main 5-Minute Timer: Resets 5 seconds before every 5-min mark
+        // Main 5-Minute Timer
         let mainRem = 295 - secIn5Min;
         if (mainRem < 0) mainRem += 300;
 
@@ -99,14 +106,12 @@
         const textEl = document.getElementById('main-timer-text');
 
         if (mainRem > 290) {
-          if (!iconEl.src.includes(SUN_ICON)) iconEl.src = SUN_icon;
+          if (!iconEl.src.includes(SUN_ICON)) iconEl.src = SUN_ICON;
           const sunCount = mainRem - 290;
-          textEl.innerText = '00:' + String(sunCount).padStart(2, '0');
+          textEl.innerText = '00:' + String(sunCount).toFixed(2).padStart(5, '0');
         } else {
           if (!iconEl.src.includes(MOON_ICON)) iconEl.src = MOON_ICON;
-          const m = Math.floor(mainRem / 60);
-          const s = mainRem % 60;
-          textEl.innerText = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+          textEl.innerText = formatTimeWithDecimals(mainRem);
         }
 
       } catch (err) {
@@ -114,7 +119,8 @@
       }
     }
 
-    setInterval(tick, 1000);
+    // High frequency update for smooth decimal ticking
+    setInterval(tick, 50);
     tick();
   </script>
 </body>
