@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>24/7 Stream Overlay</title>
+  <title>24/7 Stream Overlay - Final Theme</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { 
@@ -54,7 +54,7 @@
       z-index: 3;
     }
 
-    /* BANNERS (SEPARATE BLOCKS) */
+    /* BANNERS (SEPARATE INDIVIDUAL BLOCKS) */
     .banner-card { 
       height: 75px; 
     }
@@ -124,18 +124,17 @@
       object-fit: contain; 
     }
 
-    /* MAIN TIMER TEXT */
+    /* MAIN TIMER TEXT & HIGHLIGHT */
+    .timer-main {
+      background: linear-gradient(180deg, #ffd700 0%, #cca300 50%, #997a00 100%);
+      border-color: #ffe680;
+    }
+
     .timer-main .timer-text { 
       font-size: 38px; 
       font-weight: 900; 
       color: #000000; 
       z-index: 4;
-    }
-
-    /* Highlight style for Main Timer background */
-    .timer-main {
-      background: linear-gradient(180deg, #ffd700 0%, #cca300 50%, #997a00 100%);
-      border-color: #ffe680;
     }
 
     /* SECONDARY TIMERS TEXT */
@@ -201,7 +200,7 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    // Fine-tuned delay offset
+    // High-precision background offset
     const streamDelaySec = -9.999; 
 
     function formatTimeWhole(totalSec) {
@@ -220,12 +219,12 @@
         const secIn30Min = totalSec % 1800;
         const secIn5Min = totalSec % 300;
 
-        // Bottom Timer: Resets 5 seconds before every hour and half-hour
+        // Bottom Timer
         let t2Rem = 1795 - secIn30Min;
         if (t2Rem < 0) t2Rem += 1800;
         document.getElementById('timer2-text').innerText = formatTimeWhole(t2Rem);
 
-        // Middle Timer: Resets at :15 and :45
+        // Middle Timer
         let t1Rem = 895 - secIn30Min;
         if (t1Rem < 0) t1Rem += 1800;
         document.getElementById('timer1-text').innerText = formatTimeWhole(t1Rem);
@@ -240,7 +239,7 @@
         let roundedMain = Math.round(mainRem);
         if (roundedMain >= 300) roundedMain = 0;
 
-        // Sun icon countdown window
+        // Sun icon window with strictly rounded whole-second countdown (5:00 down to 4:51)
         if (secIn5Min >= 290) {
           if (!iconEl.src.includes(SUN_ICON)) iconEl.src = SUN_ICON;
           let sunCount = Math.round(300 - secIn5Min);
