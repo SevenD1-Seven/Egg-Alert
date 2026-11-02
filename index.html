@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>24/7 Stream Overlay - Final Theme</title>
+  <title>24/7 Stream Overlay - Master Dashboard</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { 
@@ -14,6 +14,7 @@
       color: #fff; 
     }
 
+    /* RIGHT SIDEBAR: BANNERS & TIMERS */
     .right-sidebar { 
       position: absolute; 
       top: 20px; 
@@ -22,141 +23,200 @@
       display: flex; 
       flex-direction: column; 
       gap: 16px; 
+      z-index: 10;
     }
 
-    /* GLASSY METALLIC BLUE THEME STYLE */
+    /* GLASSY METALLIC BLUE THEME */
     .glass-card {
       position: relative;
       border-radius: 16px;
       overflow: hidden;
-      /* Deep metallic blue gradient background */
       background: linear-gradient(180deg, #1b385e 0%, #0d1e36 50%, #091322 100%);
-      /* Double metallic chrome outline */
       border: 3px solid #6b82a0;
       box-shadow: 
-        0 0 0 1px #050a12,                             /* Outer dark edge */
-        inset 0 1px 2px rgba(255, 255, 255, 0.6),       /* Top shine edge */
-        inset 0 -2px 4px rgba(0, 0, 0, 0.8),            /* Bottom inset shadow */
-        0 8px 16px rgba(0, 0, 0, 0.6);                  /* Soft drop shadow */
+        0 0 0 1px #050a12,
+        inset 0 1px 2px rgba(255, 255, 255, 0.6),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.8),
+        0 8px 16px rgba(0, 0, 0, 0.6);
     }
 
-    /* Glossy top sheen overlay */
     .glass-card::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 45%;
+      top: 0; left: 0; right: 0; height: 45%;
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%);
       border-radius: 12px 12px 100% 100% / 12px 12px 10px 10px;
       pointer-events: none;
       z-index: 3;
     }
 
-    /* BANNERS (SEPARATE INDIVIDUAL BLOCKS) */
-    .banner-card { 
-      height: 75px; 
+    .banner-card { height: 75px; }
+    .banner-bg { 
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+      object-fit: cover; z-index: 1; opacity: 0.45; mix-blend-mode: overlay;
+    }
+    .marquee-wrapper { 
+      position: relative; z-index: 2; width: 100%; height: 100%; 
+      display: flex; align-items: center; overflow: hidden; white-space: nowrap; 
+    }
+    .marquee-text { 
+      display: inline-block; font-size: 22px; font-weight: 900; color: #ffffff; 
+      text-transform: uppercase; letter-spacing: 1px; text-shadow: 2px 2px 4px #000; 
+      padding-left: 100%; animation: marquee 12s linear infinite; 
+    }
+    @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+
+    .timer-card { display: flex; align-items: center; justify-content: flex-start; gap: 14px; padding: 12px 16px; }
+    .icon-box { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; flex-shrink: 0; z-index: 4; }
+    .timer-icon { width: 100%; height: 100%; object-fit: contain; }
+
+    .timer-main { background: linear-gradient(180deg, #ffd700 0%, #cca300 50%, #997a00 100%); border-color: #ffe680; }
+    .timer-main .timer-text { font-size: 38px; font-weight: 900; color: #000000; z-index: 4; }
+    .timer-secondary .timer-text { font-size: 28px; font-weight: 800; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; }
+    .timer-secondary .icon-box { width: 36px; height: 36px; }
+
+    /* FAR LEFT PANEL: LAST SEEN / ÚLTIMO SPAWN */
+    .left-sidebar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 320px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 10;
+    }
+    .last-seen-title {
+      font-size: 20px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 8px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 10px;
+      border: 2px solid #555;
+    }
+    .section-header {
+      font-size: 16px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-transform: uppercase;
+    }
+    .header-divine { background: #ffd700; color: #000; border: 2px solid #fff; }
+    .header-eternal { background: #8a2be2; color: #fff; border: 2px solid #da70d6; }
+    .header-secret { background: #333; color: #fff; border: 2px solid #777; }
+
+    .pet-list { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; padding-left: 6px; }
+    .pet-item { display: flex; align-items: center; justify-content: space-between; font-size: 14px; text-shadow: 1px 1px 2px #000; }
+    .pet-info { display: flex; align-items: center; gap: 6px; }
+    .pet-icon { width: 22px; height: 22px; object-fit: contain; }
+    .pet-time { font-size: 12px; color: #ccc; }
+
+    /* MIDDLE TOP: EGG ALERT SLIDING U-ARC CARDS */
+    .egg-alert-container {
+      position: absolute;
+      top: 20px;
+      left: 360px;
+      right: 420px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 5;
     }
     
-    .banner-bg { 
-      position: absolute; 
-      top: 0; 
-      left: 0; 
-      width: 100%; 
-      height: 100%; 
-      object-fit: cover; 
-      z-index: 1; 
-      opacity: 0.45; 
-      mix-blend-mode: overlay;
+    .egg-card {
+      width: 140px;
+      height: 140px;
+      border-radius: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      position: relative;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.7);
+      transition: all 0.6s ease-in-out;
     }
 
-    .marquee-wrapper { 
-      position: relative; 
-      z-index: 2; 
-      width: 100%; 
-      height: 100%; 
-      display: flex; 
-      align-items: center; 
-      overflow: hidden; 
-      white-space: nowrap; 
+    /* U-ARC vertical positioning based on index */
+    .egg-card:nth-child(1) { transform: translateY(0px); }
+    .egg-card:nth-child(2) { transform: translateY(20px); }
+    .egg-card:nth-child(3) { transform: translateY(35px); }
+    .egg-card:nth-child(4) { transform: translateY(35px); }
+    .egg-card:nth-child(5) { transform: translateY(20px); }
+    .egg-card:nth-child(6) { transform: translateY(0px); }
+
+    /* CARD RARITY STYLES */
+    .card-divine {
+      background: linear-gradient(180deg, #ffe066 0%, #b8860b 100%);
+      border: 3px solid #ffea9f;
+      color: #000;
+    }
+    .card-eternal {
+      background: linear-gradient(180deg, #4b0082 0%, #1a0033 100%);
+      border: 3px solid #8a2be2;
+      color: #fff;
+    }
+    .card-secret {
+      background: linear-gradient(180deg, #2c2c2c 0%, #111111 100%);
+      border: 3px solid #444444;
+      color: #fff;
     }
 
-    .marquee-text { 
-      display: inline-block; 
-      font-size: 22px; 
-      font-weight: 900; 
-      color: #ffffff; 
-      text-transform: uppercase; 
-      letter-spacing: 1px; 
-      text-shadow: 2px 2px 4px #000, -1px -1px 0 #000; 
-      padding-left: 100%; 
-      animation: marquee 12s linear infinite; 
+    .egg-title { font-size: 13px; font-weight: 900; text-align: center; line-height: 1.1; }
+    .egg-img { width: 50px; height: 50px; object-fit: contain; }
+    .spawn-badge-now {
+      background: #ff0000;
+      color: #ffff00;
+      font-weight: 900;
+      font-size: 12px;
+      padding: 2px 10px;
+      border-radius: 12px;
+      border: 1px solid #fff;
+      text-transform: uppercase;
     }
-
-    @keyframes marquee { 
-      0% { transform: translate(0, 0); } 
-      100% { transform: translate(-100%, 0); } 
-    }
-
-    /* TIMERS (SEPARATE INDIVIDUAL BLOCKS) */
-    .timer-card { 
-      display: flex; 
-      align-items: center; 
-      justify-content: flex-start; 
-      gap: 14px; 
-      padding: 12px 16px; 
-    }
-
-    .icon-box { 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      width: 48px; 
-      height: 48px; 
-      flex-shrink: 0; 
-      z-index: 4;
-    }
-
-    .timer-icon { 
-      width: 100%; 
-      height: 100%; 
-      object-fit: contain; 
-    }
-
-    /* MAIN TIMER TEXT & HIGHLIGHT */
-    .timer-main {
-      background: linear-gradient(180deg, #ffd700 0%, #cca300 50%, #997a00 100%);
-      border-color: #ffe680;
-    }
-
-    .timer-main .timer-text { 
-      font-size: 38px; 
-      font-weight: 900; 
-      color: #000000; 
-      z-index: 4;
-    }
-
-    /* SECONDARY TIMERS TEXT */
-    .timer-secondary .timer-text { 
-      font-size: 28px; 
-      font-weight: 800; 
-      color: #ffffff; 
-      text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; 
-      z-index: 4;
-    }
-
-    .timer-secondary .icon-box { 
-      width: 36px; 
-      height: 36px; 
+    .spawn-badge-ago {
+      font-weight: 900;
+      font-size: 12px;
+      color: #555;
+      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
     }
   </style>
 </head>
 <body>
 
+  <!-- LEFT SIDEBAR: LAST SEEN -->
+  <div class="left-sidebar">
+    <div class="last-seen-title">LAST SEEN / ÚLTIMO SPAWN</div>
+
+    <div>
+      <div class="section-header header-divine">🟡 Divine — Last Seen</div>
+      <div class="pet-list" id="divine-list"></div>
+    </div>
+
+    <div>
+      <div class="section-header header-eternal">🟣 Eternal — Last Seen</div>
+      <div class="pet-list" id="eternal-list"></div>
+    </div>
+
+    <div>
+      <div class="section-header header-secret">⚪ Secret — Last Seen</div>
+      <div class="pet-list" id="secret-list"></div>
+    </div>
+  </div>
+
+  <!-- CENTER TOP: EGG ALERTS SLIDING ARC -->
+  <div class="egg-alert-container" id="egg-alert-container"></div>
+
+  <!-- RIGHT SIDEBAR: BANNERS & TIMERS -->
   <div class="right-sidebar">
-    
-    <!-- BANNER 1 (SPANISH) -->
     <div class="glass-card banner-card">
       <img class="banner-bg" src="banner1_bg.gif" alt="" onerror="this.style.display='none'">
       <div class="marquee-wrapper">
@@ -164,7 +224,6 @@
       </div>
     </div>
 
-    <!-- BANNER 2 (ENGLISH) -->
     <div class="glass-card banner-card">
       <img class="banner-bg" src="banner2_bg.gif" alt="" onerror="this.style.display='none'">
       <div class="marquee-wrapper">
@@ -172,7 +231,6 @@
       </div>
     </div>
 
-    <!-- SEPARATE INDIVIDUAL TIMER BLOCKS -->
     <div class="glass-card timer-card timer-main">
       <div class="icon-box">
         <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon" onerror="this.style.display='none'">
@@ -193,70 +251,93 @@
       </div>
       <div id="timer2-text" class="timer-text">30:00</div>
     </div>
-
   </div>
 
   <script>
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    // High-precision background offset
-    const streamDelaySec = -9.999; 
+    // Adjusted latency offset: 5 seconds ahead for live stream latency
+    const streamDelaySec = 5; 
 
-    function formatTimeWhole(totalSec) {
-      if (totalSec < 0) totalSec = 0;
-      const rounded = Math.round(totalSec);
-      const m = Math.floor(rounded / 60);
-      const s = rounded % 60;
-      return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    // --- LAST SEEN INITIAL DATA ---
+    const divinePets = [
+      { name: 'World Burner', time: '2 days ago', img: 'world_burner.png' },
+      { name: 'Unicorn', time: '3 days ago', img: 'unicorn.png' },
+      { name: 'Kitsune', time: '4 days ago', img: 'kitsune.png' },
+      { name: 'Nightflame', time: '5 days ago', img: 'nightflame.png' },
+      { name: 'Royal Skywhale', time: '6 days ago', img: 'skywhale.png' },
+      { name: 'ArchAngel', time: '8 days ago', img: 'archangel.png' }
+    ];
+
+    const eternalPets = [
+      { name: 'Phoenix', time: '10 minutes ago', img: 'phoenix.png' },
+      { name: 'Lava Dragon', time: '25 minutes ago', img: 'lava_dragon.png' },
+      { name: 'Gorilla King', time: '53 minutes ago', img: 'gorilla_king.png' },
+      { name: 'Oni Tiger', time: 'an hour ago', img: 'oni_tiger.png' },
+      { name: 'Pegasus', time: '2 hours ago', img: 'pegasus.png' },
+      { name: 'Mosasaurus', time: '4 hours ago', img: 'mosasaurus.png' }
+    ];
+
+    const secretPets = [
+      { name: 'Gargoyle', time: '15 minutes ago', img: 'gargoyle.png' },
+      { name: 'TRex', time: '15 minutes ago', img: 'trex.png' },
+      { name: 'Starry Fox', time: '15 minutes ago', img: 'starry_fox.png' },
+      { name: 'Kraken', time: '15 minutes ago', img: 'kraken.png' },
+      { name: 'RazorFang', time: '30 minutes ago', img: 'razorfang.png' },
+      { name: 'King Snake', time: '12 hours ago', img: 'king_snake.png' }
+    ];
+
+    function renderLastSeen() {
+      const fillList = (id, list) => {
+        const el = document.getElementById(id);
+        el.innerHTML = list.map(item => `
+          <div class="pet-item">
+            <div class="pet-info">
+              <img class="pet-icon" src="${item.img}" onerror="this.style.display='none'">
+              <span>${item.name}</span>
+            </div>
+            <span class="pet-time">— ${item.time}</span>
+          </div>
+        `).join('');
+      };
+      fillList('divine-list', divinePets);
+      fillList('eternal-list', eternalPets);
+      fillList('secret-list', secretPets);
     }
+    renderLastSeen();
 
-    function tick() {
+    // --- EGG ALERT REGISTRY & U-TURN CARDS ---
+    let eggRegistry = [
+      { name: 'Phoenix', type: 'Eternal', biome: 'Volcano', spawnMin: 0, img: 'phoenix.png' },
+      { name: 'King Snake', type: 'Secret', biome: 'Jungle', spawnMin: 5, img: 'king_snake.png' },
+      { name: 'Centaur', type: 'Secret', biome: 'Angels', spawnMin: 5, img: 'centaur.png' },
+      { name: 'Gargoyle', type: 'Secret', biome: 'Volcano', spawnMin: 10, img: 'gargoyle.png' },
+      { name: 'Unicorn', type: 'Divine', biome: 'Sky', spawnMin: 15, img: 'unicorn.png' },
+      { name: 'Kraken', type: 'Secret', biome: 'Ocean', spawnMin: 20, img: 'kraken.png' }
+    ];
+
+    function announceEgg(eggName, biome) {
       try {
-        const d = new Date();
-        const totalSec = (d.getHours() * 3600) + (d.getMinutes() * 60) + (d.getSeconds() + (d.getMilliseconds() / 1000)) - streamDelaySec;
-
-        const secIn30Min = totalSec % 1800;
-        const secIn5Min = totalSec % 300;
-
-        // Bottom Timer
-        let t2Rem = 1795 - secIn30Min;
-        if (t2Rem < 0) t2Rem += 1800;
-        document.getElementById('timer2-text').innerText = formatTimeWhole(t2Rem);
-
-        // Middle Timer
-        let t1Rem = 895 - secIn30Min;
-        if (t1Rem < 0) t1Rem += 1800;
-        document.getElementById('timer1-text').innerText = formatTimeWhole(t1Rem);
-
-        // Main 5-Minute Timer
-        let mainRem = 295 - secIn5Min;
-        if (mainRem < 0) mainRem += 300;
-
-        const iconEl = document.getElementById('main-icon');
-        const textEl = document.getElementById('main-timer-text');
-
-        let roundedMain = Math.round(mainRem);
-        if (roundedMain >= 300) roundedMain = 0;
-
-        // Sun icon window with strictly rounded whole-second countdown (5:00 down to 4:51)
-        if (secIn5Min >= 290) {
-          if (!iconEl.src.includes(SUN_ICON)) iconEl.src = SUN_ICON;
-          let sunCount = Math.round(300 - secIn5Min);
-          if (sunCount > 10) sunCount = 10;
-          textEl.innerText = '00:' + String(sunCount).padStart(2, '0');
-        } else {
-          if (!iconEl.src.includes(MOON_ICON)) iconEl.src = MOON_ICON;
-          textEl.innerText = formatTimeWhole(roundedMain);
-        }
-
-      } catch (err) {
-        console.error("Tick error:", err);
+        const speech = new SpeechSynthesisUtterance(`${eggName} Has appeared in${biome}`);
+        speech.rate = 1.0;
+        speech.pitch = 1.0;
+        window.speechSynthesis.speak(speech);
+      } catch (e) {
+        console.error("Speech error:", e);
       }
     }
 
-    setInterval(tick, 50);
-    tick();
-  </script>
-</body>
-</html>
+    function renderAlertCards() {
+      const container = document.getElementById('egg-alert-container');
+      const d = new Date();
+      const currentMin = d.getMinutes();
+      const currentWaveStartMin = Math.floor(currentMin / 5) * 5;
+
+      const visibleEggs = eggRegistry.slice(0, 6);
+      container.innerHTML = visibleEggs.map(egg => {
+        const isCurrentWave = (egg.spawnMin === currentWaveStartMin);
+        const minsAgo = (currentMin >= egg.spawnMin) ? (currentMin - egg.spawnMin) : (60 - egg.spawnMin + currentMin);
+        
+        const badgeHTML = isCurrentWave 
+          ? `<div class="spawn-badge-
