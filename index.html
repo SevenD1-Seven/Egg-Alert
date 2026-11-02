@@ -5,29 +5,152 @@
   <title>24/7 Stream Overlay</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: transparent; font-family: 'Arial Black', Impact, sans-serif; overflow: hidden; width: 100vw; height: 100vh; color: #fff; }
-    .right-sidebar { position: absolute; top: 20px; right: 20px; width: 380px; display: flex; flex-direction: column; gap: 16px; }
+    body { 
+      background: transparent; 
+      font-family: 'Arial Black', Impact, sans-serif; 
+      overflow: hidden; 
+      width: 100vw; 
+      height: 100vh; 
+      color: #fff; 
+    }
 
-    /* BANNERS */
-    .banner-card { position: relative; height: 75px; border-radius: 12px; overflow: hidden; background-color: #111; border: 4px solid #00d2ff; box-shadow: inset 0 0 6px #0088cc, 0 0 10px rgba(0, 210, 255, 0.6); }
-    .banner-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; opacity: 0.6; }
-    .marquee-wrapper { position: relative; z-index: 2; width: 100%; height: 100%; display: flex; align-items: center; overflow: hidden; white-space: nowrap; }
-    .marquee-text { display: inline-block; font-size: 24px; font-weight: 900; color: #ff1100; text-transform: uppercase; letter-spacing: 1px; text-shadow: 2px 2px 4px #000, -1px -1px 0 #000; padding-left: 100%; animation: marquee 12s linear infinite; }
-    @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+    .right-sidebar { 
+      position: absolute; 
+      top: 20px; 
+      right: 20px; 
+      width: 380px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 16px; 
+    }
 
-    /* TIMERS CONTAINER */
-    .timers-container { display: flex; flex-direction: column; gap: 12px; background: rgba(0, 0, 0, 0.4); padding: 12px; border-radius: 12px; backdrop-filter: blur(4px); }
-    .timer-card { display: flex; align-items: center; justify-content: flex-start; gap: 14px; background: rgba(20, 20, 30, 0.75); border: 2px solid rgba(255, 255, 255, 0.2); border-radius: 10px; padding: 8px 14px; }
-    .icon-box { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; flex-shrink: 0; }
-    .timer-icon { width: 100%; height: 100%; object-fit: contain; }
+    /* GLASSY METALLIC BLUE THEME STYLE */
+    .glass-card {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      /* Deep metallic blue gradient background */
+      background: linear-gradient(180deg, #1b385e 0%, #0d1e36 50%, #091322 100%);
+      /* Double metallic chrome outline */
+      border: 3px solid #6b82a0;
+      box-shadow: 
+        0 0 0 1px #050a12,                             /* Outer dark edge */
+        inset 0 1px 2px rgba(255, 255, 255, 0.6),       /* Top shine edge */
+        inset 0 -2px 4px rgba(0, 0, 0, 0.8),            /* Bottom inset shadow */
+        0 8px 16px rgba(0, 0, 0, 0.6);                  /* Soft drop shadow */
+    }
 
-    /* MAIN 5-MIN TIMER */
-    .timer-main { border: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.9); padding: 12px 16px; }
-    .timer-main .timer-text { font-size: 38px; font-weight: 900; color: #000000; }
+    /* Glossy top sheen overlay */
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 45%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%);
+      border-radius: 12px 12px 100% 100% / 12px 12px 10px 10px;
+      pointer-events: none;
+      z-index: 3;
+    }
 
-    /* SECONDARY 30-MIN TIMERS */
-    .timer-secondary .timer-text { font-size: 28px; font-weight: 800; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; }
-    .timer-secondary .icon-box { width: 36px; height: 36px; }
+    /* BANNERS (SEPARATE BLOCKS) */
+    .banner-card { 
+      height: 75px; 
+    }
+    
+    .banner-bg { 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      z-index: 1; 
+      opacity: 0.45; 
+      mix-blend-mode: overlay;
+    }
+
+    .marquee-wrapper { 
+      position: relative; 
+      z-index: 2; 
+      width: 100%; 
+      height: 100%; 
+      display: flex; 
+      align-items: center; 
+      overflow: hidden; 
+      white-space: nowrap; 
+    }
+
+    .marquee-text { 
+      display: inline-block; 
+      font-size: 22px; 
+      font-weight: 900; 
+      color: #ffffff; 
+      text-transform: uppercase; 
+      letter-spacing: 1px; 
+      text-shadow: 2px 2px 4px #000, -1px -1px 0 #000; 
+      padding-left: 100%; 
+      animation: marquee 12s linear infinite; 
+    }
+
+    @keyframes marquee { 
+      0% { transform: translate(0, 0); } 
+      100% { transform: translate(-100%, 0); } 
+    }
+
+    /* TIMERS (SEPARATE INDIVIDUAL BLOCKS) */
+    .timer-card { 
+      display: flex; 
+      align-items: center; 
+      justify-content: flex-start; 
+      gap: 14px; 
+      padding: 12px 16px; 
+    }
+
+    .icon-box { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      width: 48px; 
+      height: 48px; 
+      flex-shrink: 0; 
+      z-index: 4;
+    }
+
+    .timer-icon { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: contain; 
+    }
+
+    /* MAIN TIMER TEXT */
+    .timer-main .timer-text { 
+      font-size: 38px; 
+      font-weight: 900; 
+      color: #000000; 
+      z-index: 4;
+    }
+
+    /* Highlight style for Main Timer background */
+    .timer-main {
+      background: linear-gradient(180deg, #ffd700 0%, #cca300 50%, #997a00 100%);
+      border-color: #ffe680;
+    }
+
+    /* SECONDARY TIMERS TEXT */
+    .timer-secondary .timer-text { 
+      font-size: 28px; 
+      font-weight: 800; 
+      color: #ffffff; 
+      text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; 
+      z-index: 4;
+    }
+
+    .timer-secondary .icon-box { 
+      width: 36px; 
+      height: 36px; 
+    }
   </style>
 </head>
 <body>
@@ -35,31 +158,41 @@
   <div class="right-sidebar">
     
     <!-- BANNER 1 (SPANISH) -->
-    <div class="banner-card">
+    <div class="glass-card banner-card">
       <img class="banner-bg" src="banner1_bg.gif" alt="" onerror="this.style.display='none'">
-      <div class="marquee-wrapper"><div class="marquee-text">¿Buscas alguna fusión? Deja tu user y un comentario.</div></div>
+      <div class="marquee-wrapper">
+        <div class="marquee-text">¿Buscas alguna fusión? Deja tu user y un comentario.</div>
+      </div>
     </div>
 
     <!-- BANNER 2 (ENGLISH) -->
-    <div class="banner-card">
+    <div class="glass-card banner-card">
       <img class="banner-bg" src="banner2_bg.gif" alt="" onerror="this.style.display='none'">
-      <div class="marquee-wrapper"><div class="marquee-text">Looking for a merge? Leave your user and a comment.</div></div>
+      <div class="marquee-wrapper">
+        <div class="marquee-text">Looking for a merge? Leave your user and a comment.</div>
+      </div>
     </div>
 
-    <!-- TIMERS SECTION -->
-    <div class="timers-container">
-      <div class="timer-card timer-main">
-        <div class="icon-box"><img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon" onerror="this.style.display='none'"></div>
-        <div id="main-timer-text" class="timer-text">00:00</div>
+    <!-- SEPARATE INDIVIDUAL TIMER BLOCKS -->
+    <div class="glass-card timer-card timer-main">
+      <div class="icon-box">
+        <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon" onerror="this.style.display='none'">
       </div>
-      <div class="timer-card timer-secondary">
-        <div class="icon-box"><img class="timer-icon" src="game_icon1.jpg" alt="Event 1" onerror="this.style.display='none'"></div>
-        <div id="timer1-text" class="timer-text">30:00</div>
+      <div id="main-timer-text" class="timer-text">00:00</div>
+    </div>
+
+    <div class="glass-card timer-card timer-secondary">
+      <div class="icon-box">
+        <img class="timer-icon" src="game_icon1.jpg" alt="Event 1" onerror="this.style.display='none'">
       </div>
-      <div class="timer-card timer-secondary">
-        <div class="icon-box"><img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'"></div>
-        <div id="timer2-text" class="timer-text">30:00</div>
+      <div id="timer1-text" class="timer-text">30:00</div>
+    </div>
+
+    <div class="glass-card timer-card timer-secondary">
+      <div class="icon-box">
+        <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
       </div>
+      <div id="timer2-text" class="timer-text">30:00</div>
     </div>
 
   </div>
@@ -68,7 +201,7 @@
     const SUN_ICON = 'sun_icon.jpg';
     const MOON_ICON = 'moon_icon.jpg';
     
-    // High-precision background offset
+    // Fine-tuned delay offset
     const streamDelaySec = -9.999; 
 
     function formatTimeWhole(totalSec) {
@@ -87,12 +220,12 @@
         const secIn30Min = totalSec % 1800;
         const secIn5Min = totalSec % 300;
 
-        // Bottom Timer
+        // Bottom Timer: Resets 5 seconds before every hour and half-hour
         let t2Rem = 1795 - secIn30Min;
         if (t2Rem < 0) t2Rem += 1800;
         document.getElementById('timer2-text').innerText = formatTimeWhole(t2Rem);
 
-        // Middle Timer
+        // Middle Timer: Resets at :15 and :45
         let t1Rem = 895 - secIn30Min;
         if (t1Rem < 0) t1Rem += 1800;
         document.getElementById('timer1-text').innerText = formatTimeWhole(t1Rem);
@@ -107,7 +240,7 @@
         let roundedMain = Math.round(mainRem);
         if (roundedMain >= 300) roundedMain = 0;
 
-        // Sun icon window with strictly rounded whole-second countdown
+        // Sun icon countdown window
         if (secIn5Min >= 290) {
           if (!iconEl.src.includes(SUN_ICON)) iconEl.src = SUN_ICON;
           let sunCount = Math.round(300 - secIn5Min);
