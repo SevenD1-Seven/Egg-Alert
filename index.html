@@ -74,73 +74,11 @@
     .timer-main .timer-text { font-size: 38px; font-weight: 900; color: #000000; z-index: 4; }
     .timer-secondary .timer-text { font-size: 28px; font-weight: 800; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; }
     .timer-secondary .icon-box { width: 36px; height: 36px; }
-
-    /* CENTER TOP: EGG ALERTS FEED (Spans wider since left sidebar is gone) */
-    .egg-alert-container {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      right: 420px;
-      height: 160px;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 12px;
-      z-index: 5;
-      overflow-x: auto;
-      padding-bottom: 10px;
-    }
-    
-    .egg-card {
-      width: 140px;
-      height: 140px;
-      flex-shrink: 0;
-      border-radius: 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px;
-      position: relative;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.7);
-    }
-
-    .card-divine {
-      background: linear-gradient(180deg, #ffe066 0%, #b8860b 100%);
-      border: 3px solid #ffea9f;
-      color: #000;
-    }
-    .card-eternal {
-      background: linear-gradient(180deg, #4b0082 0%, #1a0033 100%);
-      border: 3px solid #8a2be2;
-      color: #fff;
-    }
-    .card-secret {
-      background: linear-gradient(180deg, #2c2c2c 0%, #111111 100%);
-      border: 3px solid #444444;
-      color: #fff;
-    }
-
-    .egg-title { font-size: 13px; font-weight: 900; text-align: center; line-height: 1.1; }
-    .egg-img { width: 50px; height: 50px; object-fit: contain; }
-    .spawn-badge-now {
-      background: #ff0000;
-      color: #ffff00;
-      font-weight: 900;
-      font-size: 12px;
-      padding: 2px 10px;
-      border-radius: 12px;
-      border: 1px solid #fff;
-      text-transform: uppercase;
-    }
   </style>
 </head>
 <body>
 
-  <!-- CENTER TOP: EGG ALERTS FEED -->
-  <div class="egg-alert-container" id="egg-alert-container"></div>
-
-  <!-- RIGHT SIDEBAR: BANNERS & TIMERS -->
+  <!-- RIGHT SIDEBAR: BANNERS & TIMERS ONLY -->
   <div class="right-sidebar">
     <div class="glass-card banner-card">
       <img class="banner-bg" src="banner1_bg.gif" alt="" onerror="this.style.display='none'">
@@ -161,7 +99,7 @@
       <div class="icon-box">
         <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon" onerror="this.style.display='none'">
       </div>
-      <div id="main-timer-text" class="timer-text">00:00</div>
+      <div id="main-timer-text" class="timer-text">00:00:00</div>
     </div>
 
     <!-- SPAWN COUNTDOWN TIMER 1 -->
@@ -186,15 +124,15 @@
     function updateTimers() {
       const now = new Date();
       
-      // Main Clock (Local Time HH:MM:SS or HH:MM)
+      // Main Clock (HH:MM:SS)
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const seconds = String(now.getSeconds()).padStart(2, '0');
       document.getElementById('main-timer-text').innerText = `${hours}:${minutes}:${seconds}`;
 
-      // 5-Minute Spawn Wave Countdowns (counts down every 5 minutes)
+      // 5-Minute Spawn Wave Countdowns
       const secInto5Min = (now.getMinutes() % 5) * 60 + now.getSeconds();
-      const secRemaining = 300 - secInto5Min; // 300 seconds = 5 minutes
+      const secRemaining = 300 - secInto5Min; 
       const remMin = String(Math.floor(secRemaining / 60)).padStart(2, '0');
       const remSec = String(secRemaining % 60).padStart(2, '0');
       
@@ -205,33 +143,6 @@
 
     setInterval(updateTimers, 1000);
     updateTimers();
-
-    // --- LIVE WEBHOOK SYNC FOR EGG CARDS ---
-    async function fetchAlerts() {
-      try {
-        const response = await fetch('http://localhost:3000/alerts');
-        const alerts = await response.json();
-        
-        if (alerts.length === 0) return;
-
-        const container = document.getElementById('egg-alert-container');
-        container.innerHTML = alerts.map(alert => {
-          const typeClass = alert.type ? alert.type.toLowerCase() : 'secret';
-          return `
-            <div class="egg-card card-${typeClass}">
-              <div class="egg-title">${alert.name}</div>
-              <img class="egg-img" src="${alert.img}" alt="" onerror="this.style.display='none'">
-              <div class="spawn-badge-now">${alert.location}</div>
-            </div>
-          `;
-        }).join('');
-      } catch (err) {
-        // Fallback if offline
-      }
-    }
-
-    setInterval(fetchAlerts, 2000);
-    fetchAlerts();
   </script>
 </body>
 </html>
