@@ -151,18 +151,18 @@
   </div>
 
   <script>
-    // --- TIMER OFFSET CONTROLS ---
-    const topTimerOffsetSec = 5;    
-    const middleTimerOffsetSec = 5; 
-    const bottomTimerOffsetSec = 5; 
+    // --- SINGLE GLOBAL TIMER OFFSET (Applies to all 3 timers) ---
+    const globalOffsetSec = 5;    
 
     function updateTimers() {
       const now = new Date();
       const totalSecToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds() / 1000;
+      
+      // Apply the single global offset to all calculations
+      const shiftedSec = totalSecToday + globalOffsetSec;
 
       // --- 1. TOP 5-MIN TIMER ---
-      const shifted5MinSec = totalSecToday + topTimerOffsetSec;
-      const secInto5MinBlock = shifted5MinSec % 300;
+      const secInto5MinBlock = shiftedSec % 300;
       const rem5MinSec = 300 - secInto5MinBlock;
 
       const m5 = Math.floor(rem5MinSec / 60);
@@ -183,7 +183,7 @@
       }
 
       // --- 2. MIDDLE TIMER (:15 / :45 intervals) ---
-      const shifted15MinSec = totalSecToday + middleTimerOffsetSec - 900;
+      const shifted15MinSec = shiftedSec - 900;
       const secInto15MinBlock = ((shifted15MinSec % 1800) + 1800) % 1800;
       const rem15MinSec = 1800 - secInto15MinBlock;
 
@@ -195,8 +195,7 @@
       }
 
       // --- 3. BOTTOM TIMER (:00 / :30 intervals) ---
-      const shifted30MinSec = totalSecToday + bottomTimerOffsetSec;
-      const secInto30MinBlock = shifted30MinSec % 1800;
+      const secInto30MinBlock = shiftedSec % 1800;
       const rem30MinSec = 1800 - secInto30MinBlock;
 
       const m30 = Math.floor(rem30MinSec / 60);
