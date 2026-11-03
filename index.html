@@ -117,7 +117,7 @@
     .pet-icon { width: 22px; height: 22px; object-fit: contain; }
     .pet-time { font-size: 12px; color: #ccc; }
 
-    /* MIDDLE TOP: EGG ALERT SLIDING U-ARC CARDS */
+    /* MIDDLE TOP: EGG ALERTS FEED */
     .egg-alert-container {
       position: absolute;
       top: 20px;
@@ -142,18 +142,8 @@
       padding: 8px;
       position: relative;
       box-shadow: 0 6px 12px rgba(0,0,0,0.7);
-      transition: all 0.6s ease-in-out;
     }
 
-    /* U-ARC vertical positioning based on index */
-    .egg-card:nth-child(1) { transform: translateY(0px); }
-    .egg-card:nth-child(2) { transform: translateY(20px); }
-    .egg-card:nth-child(3) { transform: translateY(35px); }
-    .egg-card:nth-child(4) { transform: translateY(35px); }
-    .egg-card:nth-child(5) { transform: translateY(20px); }
-    .egg-card:nth-child(6) { transform: translateY(0px); }
-
-    /* CARD RARITY STYLES */
     .card-divine {
       background: linear-gradient(180deg, #ffe066 0%, #b8860b 100%);
       border: 3px solid #ffea9f;
@@ -182,12 +172,6 @@
       border: 1px solid #fff;
       text-transform: uppercase;
     }
-    .spawn-badge-ago {
-      font-weight: 900;
-      font-size: 12px;
-      color: #555;
-      text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-    }
   </style>
 </head>
 <body>
@@ -212,7 +196,7 @@
     </div>
   </div>
 
-  <!-- CENTER TOP: EGG ALERTS SLIDING ARC -->
+  <!-- CENTER TOP: EGG ALERTS FEED -->
   <div class="egg-alert-container" id="egg-alert-container"></div>
 
   <!-- RIGHT SIDEBAR: BANNERS & TIMERS -->
@@ -254,13 +238,6 @@
   </div>
 
   <script>
-    const SUN_ICON = 'sun_icon.jpg';
-    const MOON_ICON = 'moon_icon.jpg';
-    
-    // Adjusted latency offset: 5 seconds ahead for live stream latency
-    const streamDelaySec = 5; 
-
-    // --- LAST SEEN INITIAL DATA ---
     const divinePets = [
       { name: 'World Burner', time: '2 days ago', img: 'world_burner.png' },
       { name: 'Unicorn', time: '3 days ago', img: 'unicorn.png' },
@@ -307,37 +284,31 @@
     }
     renderLastSeen();
 
-    // --- EGG ALERT REGISTRY & U-TURN CARDS ---
-    let eggRegistry = [
-      { name: 'Phoenix', type: 'Eternal', biome: 'Volcano', spawnMin: 0, img: 'phoenix.png' },
-      { name: 'King Snake', type: 'Secret', biome: 'Jungle', spawnMin: 5, img: 'king_snake.png' },
-      { name: 'Centaur', type: 'Secret', biome: 'Angels', spawnMin: 5, img: 'centaur.png' },
-      { name: 'Gargoyle', type: 'Secret', biome: 'Volcano', spawnMin: 10, img: 'gargoyle.png' },
-      { name: 'Unicorn', type: 'Divine', biome: 'Sky', spawnMin: 15, img: 'unicorn.png' },
-      { name: 'Kraken', type: 'Secret', biome: 'Ocean', spawnMin: 20, img: 'kraken.png' }
-    ];
-
-    function announceEgg(eggName, biome) {
+    async function fetchAlerts() {
       try {
-        const speech = new SpeechSynthesisUtterance(`${eggName} Has appeared in${biome}`);
-        speech.rate = 1.0;
-        speech.pitch = 1.0;
-        window.speechSynthesis.speak(speech);
-      } catch (e) {
-        console.error("Speech error:", e);
+        const response = await fetch('http://localhost:3000/alerts');
+        const alerts = await response.json();
+        
+        if (alerts.length === 0) return;
+
+        const container = document.getElementById('egg-alert-container');
+        container.innerHTML = alerts.slice(0, 6).map(alert => {
+          const typeClass = alert.type ? alert.type.toLowerCase() : 'secret';
+          return `
+            <div class="egg-card card-${typeClass}">
+              <div class="egg-title">${alert.name}</div>
+              <img class="egg-img" src="${alert.img}" alt="" onerror="this.style.display='none'">
+              <div class="spawn-badge-now">${alert.location}</div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        // Fallback
       }
     }
 
-    function renderAlertCards() {
-      const container = document.getElementById('egg-alert-container');
-      const d = new Date();
-      const currentMin = d.getMinutes();
-      const currentWaveStartMin = Math.floor(currentMin / 5) * 5;
-
-      const visibleEggs = eggRegistry.slice(0, 6);
-      container.innerHTML = visibleEggs.map(egg => {
-        const isCurrentWave = (egg.spawnMin === currentWaveStartMin);
-        const minsAgo = (currentMin >= egg.spawnMin) ? (currentMin - egg.spawnMin) : (60 - egg.spawnMin + currentMin);
-        
-        const badgeHTML = isCurrentWave 
-          ? `<div class="spawn-badge-
+    setInterval(fetchAlerts, 2000);
+    fetchAlerts();
+  </script>
+</body>
+</html>
