@@ -75,65 +75,26 @@
     .timer-secondary .timer-text { font-size: 28px; font-weight: 800; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; }
     .timer-secondary .icon-box { width: 36px; height: 36px; }
 
-    /* FAR LEFT PANEL: LAST SEEN / ÚLTIMO SPAWN */
-    .left-sidebar {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      width: 320px;
-      max-height: calc(100vh - 40px);
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      z-index: 10;
-    }
-    .last-seen-title {
-      font-size: 20px;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 8px;
-      background: rgba(0,0,0,0.6);
-      border-radius: 10px;
-      border: 2px solid #555;
-    }
-    .section-header {
-      font-size: 16px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      text-transform: uppercase;
-    }
-    .header-divine { background: #ffd700; color: #000; border: 2px solid #fff; }
-    .header-eternal { background: #8a2be2; color: #fff; border: 2px solid #da70d6; }
-    .header-secret { background: #333; color: #fff; border: 2px solid #777; }
-
-    .pet-list { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; padding-left: 6px; }
-    .pet-item { display: flex; align-items: center; justify-content: space-between; font-size: 14px; text-shadow: 1px 1px 2px #000; }
-    .pet-info { display: flex; align-items: center; gap: 6px; }
-    .pet-icon { width: 22px; height: 22px; object-fit: contain; }
-    .pet-time { font-size: 12px; color: #ccc; }
-
-    /* MIDDLE TOP: EGG ALERTS FEED */
+    /* CENTER TOP: EGG ALERTS FEED (Spans wider since left sidebar is gone) */
     .egg-alert-container {
       position: absolute;
       top: 20px;
-      left: 360px;
+      left: 20px;
       right: 420px;
       height: 160px;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       gap: 12px;
       z-index: 5;
+      overflow-x: auto;
+      padding-bottom: 10px;
     }
     
     .egg-card {
       width: 140px;
       height: 140px;
+      flex-shrink: 0;
       border-radius: 14px;
       display: flex;
       flex-direction: column;
@@ -176,26 +137,6 @@
 </head>
 <body>
 
-  <!-- LEFT SIDEBAR: LAST SEEN -->
-  <div class="left-sidebar">
-    <div class="last-seen-title">LAST SEEN / ÚLTIMO SPAWN</div>
-
-    <div>
-      <div class="section-header header-divine">🟡 Divine — Last Seen</div>
-      <div class="pet-list" id="divine-list"></div>
-    </div>
-
-    <div>
-      <div class="section-header header-eternal">🟣 Eternal — Last Seen</div>
-      <div class="pet-list" id="eternal-list"></div>
-    </div>
-
-    <div>
-      <div class="section-header header-secret">⚪ Secret — Last Seen</div>
-      <div class="pet-list" id="secret-list"></div>
-    </div>
-  </div>
-
   <!-- CENTER TOP: EGG ALERTS FEED -->
   <div class="egg-alert-container" id="egg-alert-container"></div>
 
@@ -215,6 +156,7 @@
       </div>
     </div>
 
+    <!-- MAIN DYNAMIC CLOCK TIMER -->
     <div class="glass-card timer-card timer-main">
       <div class="icon-box">
         <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Main Icon" onerror="this.style.display='none'">
@@ -222,68 +164,49 @@
       <div id="main-timer-text" class="timer-text">00:00</div>
     </div>
 
+    <!-- SPAWN COUNTDOWN TIMER 1 -->
     <div class="glass-card timer-card timer-secondary">
       <div class="icon-box">
         <img class="timer-icon" src="game_icon1.jpg" alt="Event 1" onerror="this.style.display='none'">
       </div>
-      <div id="timer1-text" class="timer-text">30:00</div>
+      <div id="timer1-text" class="timer-text">05:00</div>
     </div>
 
+    <!-- SPAWN COUNTDOWN TIMER 2 -->
     <div class="glass-card timer-card timer-secondary">
       <div class="icon-box">
         <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
       </div>
-      <div id="timer2-text" class="timer-text">30:00</div>
+      <div id="timer2-text" class="timer-text">05:00</div>
     </div>
   </div>
 
   <script>
-    const divinePets = [
-      { name: 'World Burner', time: '2 days ago', img: 'world_burner.png' },
-      { name: 'Unicorn', time: '3 days ago', img: 'unicorn.png' },
-      { name: 'Kitsune', time: '4 days ago', img: 'kitsune.png' },
-      { name: 'Nightflame', time: '5 days ago', img: 'nightflame.png' },
-      { name: 'Royal Skywhale', time: '6 days ago', img: 'skywhale.png' },
-      { name: 'ArchAngel', time: '8 days ago', img: 'archangel.png' }
-    ];
+    // --- LIVE TICKING TIMERS ---
+    function updateTimers() {
+      const now = new Date();
+      
+      // Main Clock (Local Time HH:MM:SS or HH:MM)
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('main-timer-text').innerText = `${hours}:${minutes}:${seconds}`;
 
-    const eternalPets = [
-      { name: 'Phoenix', time: '10 minutes ago', img: 'phoenix.png' },
-      { name: 'Lava Dragon', time: '25 minutes ago', img: 'lava_dragon.png' },
-      { name: 'Gorilla King', time: '53 minutes ago', img: 'gorilla_king.png' },
-      { name: 'Oni Tiger', time: 'an hour ago', img: 'oni_tiger.png' },
-      { name: 'Pegasus', time: '2 hours ago', img: 'pegasus.png' },
-      { name: 'Mosasaurus', time: '4 hours ago', img: 'mosasaurus.png' }
-    ];
-
-    const secretPets = [
-      { name: 'Gargoyle', time: '15 minutes ago', img: 'gargoyle.png' },
-      { name: 'TRex', time: '15 minutes ago', img: 'trex.png' },
-      { name: 'Starry Fox', time: '15 minutes ago', img: 'starry_fox.png' },
-      { name: 'Kraken', time: '15 minutes ago', img: 'kraken.png' },
-      { name: 'RazorFang', time: '30 minutes ago', img: 'razorfang.png' },
-      { name: 'King Snake', time: '12 hours ago', img: 'king_snake.png' }
-    ];
-
-    function renderLastSeen() {
-      const fillList = (id, list) => {
-        const el = document.getElementById(id);
-        el.innerHTML = list.map(item => `
-          <div class="pet-item">
-            <div class="pet-info">
-              <img class="pet-icon" src="${item.img}" onerror="this.style.display='none'">
-              <span>${item.name}</span>
-            </div>
-            <span class="pet-time">— ${item.time}</span>
-          </div>
-        `).join('');
-      };
-      fillList('divine-list', divinePets);
-      fillList('eternal-list', eternalPets);
-      fillList('secret-list', secretPets);
+      // 5-Minute Spawn Wave Countdowns (counts down every 5 minutes)
+      const secInto5Min = (now.getMinutes() % 5) * 60 + now.getSeconds();
+      const secRemaining = 300 - secInto5Min; // 300 seconds = 5 minutes
+      const remMin = String(Math.floor(secRemaining / 60)).padStart(2, '0');
+      const remSec = String(secRemaining % 60).padStart(2, '0');
+      
+      const countdownStr = `${remMin}:${remSec}`;
+      document.getElementById('timer1-text').innerText = countdownStr;
+      document.getElementById('timer2-text').innerText = countdownStr;
     }
-    renderLastSeen();
 
+    setInterval(updateTimers, 1000);
+    updateTimers();
+
+    // --- LIVE WEBHOOK SYNC FOR EGG CARDS ---
     async function fetchAlerts() {
       try {
         const response = await fetch('http://localhost:3000/alerts');
@@ -292,7 +215,7 @@
         if (alerts.length === 0) return;
 
         const container = document.getElementById('egg-alert-container');
-        container.innerHTML = alerts.slice(0, 6).map(alert => {
+        container.innerHTML = alerts.map(alert => {
           const typeClass = alert.type ? alert.type.toLowerCase() : 'secret';
           return `
             <div class="egg-card card-${typeClass}">
@@ -303,7 +226,7 @@
           `;
         }).join('');
       } catch (err) {
-        // Fallback
+        // Fallback if offline
       }
     }
 
