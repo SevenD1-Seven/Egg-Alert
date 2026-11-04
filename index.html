@@ -201,16 +201,12 @@
     let lastAlert30SecKey = null;
     let lastAlert445Key = null;
 
-    function speakText(text, lang) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        utterance.volume = 1.0;
-        utterance.rate = 1.15;
-        utterance.pitch = 1.1;
-        window.speechSynthesis.speak(utterance);
-      }
+    function playAudio(filename) {
+      const audio = new Audio(filename);
+      audio.volume = 1.0; // Maximum volume
+      audio.play().catch(err => {
+        console.log("Custom audio play blocked or missing file:", err);
+      });
     }
 
     function updateTimers() {
@@ -224,21 +220,24 @@
 
         const currentBlockId = Math.floor(totalSecToday / 300);
 
-        // Audio Alerts
+        // Custom Audio File Triggers matching exact filenames:
+        // 1. Reset -> plays "10segundos.mp3"
         if (secInto5MinBlock < 1 && lastAlertResetKey !== currentBlockId) {
           lastAlertResetKey = currentBlockId;
-          speakText("10 segundos", "es-ES");
+          playAudio('10segundos.mp3');
         }
 
-        const floorRem = Math.floor(rem5MinSec);
-        if (floorRem === 30 && lastAlert30SecKey !== currentBlockId) {
+        // 2. Last 30 seconds -> plays "30segundos.mp3"
+        const rawFloorRem = Math.floor(rem5MinSec);
+        if (rawFloorRem === 30 && lastAlert30SecKey !== currentBlockId) {
           lastAlert30SecKey = currentBlockId;
-          speakText("30 segundos", "es-ES");
+          playAudio('30segundos.mp3');
         }
 
+        // 3. At 4:45 remaining -> plays "Go Go Go.mp3" (matching space in filename if applicable, or adjust if you name it without spaces)
         if (Math.floor(secInto5MinBlock) === 15 && lastAlert445Key !== currentBlockId) {
           lastAlert445Key = currentBlockId;
-          speakText("Go, go, go!", "en-US");
+          playAudio('Go Go Go.mp3');
         }
 
         const elMain = document.getElementById('main-timer-text');
