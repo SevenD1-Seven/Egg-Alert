@@ -198,6 +198,23 @@
     // --- SINGLE GLOBAL TIMER OFFSET ---
     const globalOffsetSec = 13;    
 
+    // Voice alert tracking variables to prevent repeating within the same trigger second
+    let lastAlertResetKey = null;
+    let lastAlert30SecKey = null;
+    let lastAlert445Key = null;
+
+    function speakText(text, lang) {
+      if ('speechSynthesis' in window) {
+        // Cancel any lingering queued speech so alerts play immediately
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        utterance.rate = 1.1; // Slight punchy speed
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
     function updateTimers() {
       const now = new Date();
       const totalSecToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds() / 1000 + globalOffsetSec;
@@ -205,6 +222,29 @@
       // --- 1. TOP 5-MIN TIMER & CUSTOM SEQUENCE MAPPING ---
       const secInto5MinBlock = ((totalSecToday % 300) + 300) % 300;
       const rem5MinSec = 300 - secInto5MinBlock;
+
+      // Unique block identifier (timestamp of this 5-min block start)
+      const currentBlockId = Math.floor(totalSecToday / 300);
+
+      // AUDIO ALERT TRIGGERS:
+      // 1. Reset (at start of block, rem5MinSec >= 299 or secInto5MinBlock === 0) -> "10 segundos" in Spanish
+      if (secInto5MinBlock < 1 && lastAlertResetKey !== currentBlockId) {
+        lastAlertResetKey = currentBlockId;
+        speakText("10 segundos", "es-ES");
+      }
+
+      // 2. At last 30 seconds of 5:00 timer (rem5MinSec === 30) -> "30 segundos" in Spanish
+      const floorRem = Math.floor(rem5MinSec);
+      if (floorRem === 30 && lastAlert30SecKey !== currentBlockId) {
+        lastAlert30SecKey = currentBlockId;
+        speakText("30 segundos", "es-ES");
+      }
+
+      // 3. At 4:45 remaining (which corresponds to secInto5MinBlock === 15) -> "Go go go"
+      if (Math.floor(secInto5MinBlock) === 15 && lastAlert445Key !== currentBlockId) {
+        lastAlert445Key = currentBlockId;
+        speakText("Go go go!", "en-US");
+      }
 
       const elMain = document.getElementById('main-timer-text');
 
