@@ -27,25 +27,26 @@
       z-index: 10;
     }
 
-    /* GLASSY METALLIC BLUE THEME */
+    /* MORE TRANSPARENT GLASSY METALLIC BLUE THEME */
     .glass-card {
       position: relative;
       border-radius: 16px;
       overflow: hidden;
-      background: linear-gradient(180deg, #1b385e 0%, #0d1e36 50%, #091322 100%);
-      border: 3px solid #6b82a0;
+      background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
+      backdrop-filter: blur(4px);
+      border: 3px solid rgba(107, 130, 160, 0.6);
       box-shadow: 
-        0 0 0 1px #050a12,
-        inset 0 1px 2px rgba(255, 255, 255, 0.6),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.8),
-        0 8px 16px rgba(0, 0, 0, 0.6);
+        0 0 0 1px rgba(5, 10, 18, 0.4),
+        inset 0 1px 2px rgba(255, 255, 255, 0.4),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.5),
+        0 8px 16px rgba(0, 0, 0, 0.4);
     }
 
     .glass-card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0; height: 45%;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.02) 100%);
       border-radius: 12px 12px 100% 100% / 12px 12px 10px 10px;
       pointer-events: none;
       z-index: 3;
@@ -54,7 +55,7 @@
     .banner-card { height: 75px; }
     .banner-bg { 
       position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-      object-fit: cover; z-index: 1; opacity: 0.45; mix-blend-mode: overlay;
+      object-fit: cover; z-index: 1; opacity: 0.35; mix-blend-mode: overlay;
     }
     .marquee-wrapper { 
       position: relative; z-index: 2; width: 100%; height: 100%; 
@@ -83,24 +84,60 @@
       justify-content: space-between; 
       padding: 0 16px; 
     }
-    .timer-left { display: flex; align-items: center; gap: 14px; }
+    .timer-left { display: flex; align-items: center; gap: 12px; }
     .icon-box { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; flex-shrink: 0; z-index: 4; }
     .timer-icon { width: 100%; height: 100%; object-fit: contain; }
 
-    .timer-main { background: linear-gradient(180deg, #ffd700 0%, #cca300 50%, #997a00 100%); border-color: #ffe680; }
-    .timer-main .timer-text { font-size: 36px; font-weight: 900; color: #000000; z-index: 4; }
-    .next-wave-label {
-      font-size: 13px;
-      font-weight: 900;
-      color: #000000;
-      text-transform: uppercase;
-      text-align: right;
-      line-height: 1.1;
+    /* MAIN TIMER WITH ILLUMINATION / GLOW EFFECT & NOW BADGE */
+    .timer-main { 
+      background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%); 
+      border-color: #ffe680; 
+    }
+    .timer-main.illuminated {
+      box-shadow: 0 0 25px #ffd700, 0 0 50px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.9);
+      border-color: #ffffff;
+      animation: pulse-glow 1s ease-in-out infinite alternate;
+    }
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 0 15px #ffd700, inset 0 0 10px rgba(255,255,255,0.7); }
+      100% { box-shadow: 0 0 35px #fff, 0 0 60px #ffd700, inset 0 0 20px rgba(255,255,255,1); }
+    }
+
+    .timer-main .timer-text { font-size: 32px; font-weight: 900; color: #000000; z-index: 4; }
+
+    /* STACKED BILINGUAL HEADER WORDS */
+    .bilingual-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
       z-index: 4;
-      background: rgba(255, 255, 255, 0.4);
-      padding: 4px 8px;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 4px 10px;
       border-radius: 6px;
-      border: 1px solid rgba(0,0,0,0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .lang-es { font-size: 11px; font-weight: 900; color: #ffdd44; text-transform: uppercase; }
+    .lang-en { font-size: 11px; font-weight: 900; color: #ffffff; text-transform: uppercase; }
+
+    /* "NOW" BADGE */
+    .now-badge {
+      background: #ff2222;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 0 8px #ff0000;
+      animation: flash-now 0.8s infinite alternate;
+      z-index: 4;
+    }
+    @keyframes flash-now {
+      0% { opacity: 0.7; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1.05); }
     }
 
     .timer-secondary .timer-text { font-size: 26px; font-weight: 800; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; }
@@ -125,25 +162,19 @@
       </div>
     </div>
 
-    <!-- TOP 5-MIN LOOPING TIMER WITH "NEXT WAVE" LABEL -->
-    <div class="glass-card timer-card timer-main">
+    <!-- TOP 5-MIN LOOPING TIMER (WITH BILINGUAL HEADER & 5-MIN ILLUMINATION / NOW BADGE) -->
+    <div id="main-timer-card" class="glass-card timer-card timer-main">
       <div class="timer-left">
         <div class="icon-box">
           <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Icon" onerror="this.style.display='none'">
         </div>
-        <div id="main-timer-text" class="timer-text">05:00</div>
-      </div>
-      <div class="next-wave-label">NEXT<br>WAVE</div>
-    </div>
-
-    <!-- MIDDLE TIMER (:15 / :45 intervals) -->
-    <div class="glass-card timer-card timer-secondary">
-      <div class="timer-left">
-        <div class="icon-box">
-          <img class="timer-icon" src="game_icon1.jpg" alt="Event 1" onerror="this.style.display='none'">
+        <div class="bilingual-header">
+          <span class="lang-es">Fusión</span>
+          <span class="lang-en">Merge</span>
         </div>
-        <div id="timer1-text" class="timer-text">30:00</div>
+        <div id="main-timer-text" class="timer-text">00:10</div>
       </div>
+      <div id="right-indicator-container"></div>
     </div>
 
     <!-- BOTTOM TIMER (:00 / :30 intervals) -->
@@ -166,18 +197,53 @@
       const now = new Date();
       const totalSecToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds() / 1000 + globalOffsetSec;
 
-      // --- 1. TOP 5-MIN TIMER ---
+      // --- 1. TOP 5-MIN TIMER & CUSTOM SEQUENCE MAPPING ---
       const secInto5MinBlock = ((totalSecToday % 300) + 300) % 300;
       const rem5MinSec = 300 - secInto5MinBlock;
 
-      const m5 = Math.floor(rem5MinSec / 60);
-      const s5 = Math.floor(rem5MinSec % 60);
       const elMain = document.getElementById('main-timer-text');
+      const mainCard = document.getElementById('main-timer-card');
+      const rightContainer = document.getElementById('right-indicator-container');
+
+      // Check if we are within the first 5 minutes after restart/reset (0 to 300 seconds elapsed in block)
+      const isIlluminated = secInto5MinBlock < 300; // Adjust duration condition if needed (e.g., exactly first 5 mins means secInto5MinBlock <= 300)
+      
+      if (mainCard) {
+        if (isIlluminated) {
+          mainCard.classList.add('illuminated');
+        } else {
+          mainCard.classList.remove('illuminated');
+        }
+      }
+
+      if (rightContainer) {
+        if (isIlluminated) {
+          rightContainer.innerHTML = '<div class="now-badge">NOW</div>';
+        } else {
+          rightContainer.innerHTML = '';
+        }
+      }
+
+      // Custom Mapping:
+      // - From 5:00 down to 4:51 remaining (rem5MinSec between 300 and 291): map to 00:10 down to 00:01
+      // - From 4:50 down to 00:01 remaining (rem5MinSec between 290 and 1): count down normally 04:50 to 00:01
+      let displaySec = 0;
+      if (rem5MinSec >= 291 && rem5MinSec <= 300) {
+        // Maps 300->10, 299->9 ... 291->1
+        displaySec = rem5MinSec - 290;
+      } else if (rem5MinSec > 0 && rem5MinSec <= 290) {
+        displaySec = rem5MinSec;
+      } else {
+        displaySec = 0;
+      }
+
+      const m5 = Math.floor(displaySec / 60);
+      const s5 = Math.floor(displaySec % 60);
       if (elMain) {
         elMain.innerText = `${String(m5).padStart(2, '0')}:${String(s5).padStart(2, '0')}`;
       }
 
-      // Sun/Moon Icon Toggle: Moon from 4:50 to 00:00, Sun from 5:00 to 4:51
+      // Sun/Moon Icon Toggle
       const mainIcon = document.getElementById('main-icon');
       if (mainIcon) {
         if (rem5MinSec <= 290 && rem5MinSec > 0) {
@@ -187,19 +253,7 @@
         }
       }
 
-      // --- 2. MIDDLE TIMER (:15 / :45 intervals) ---
-      const shifted15MinSec = totalSecToday - 900;
-      const secInto15MinBlock = ((shifted15MinSec % 1800) + 1800) % 1800;
-      const rem15MinSec = 1800 - secInto15MinBlock;
-
-      const m15 = Math.floor(rem15MinSec / 60);
-      const s15 = Math.floor(rem15MinSec % 60);
-      const elT1 = document.getElementById('timer1-text');
-      if (elT1) {
-        elT1.innerText = `${String(m15).padStart(2, '0')}:${String(s15).padStart(2, '0')}`;
-      }
-
-      // --- 3. BOTTOM TIMER (:00 / :30 intervals) ---
+      // --- 2. BOTTOM TIMER (:00 / :30 intervals) ---
       const secInto30MinBlock = ((totalSecToday % 1800) + 1800) % 1800;
       const rem30MinSec = 1800 - secInto30MinBlock;
 
