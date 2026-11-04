@@ -88,6 +88,22 @@
     .icon-box { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; flex-shrink: 0; z-index: 4; }
     .timer-icon { width: 100%; height: 100%; object-fit: contain; }
 
+    /* STACKED BILINGUAL HEADER WORDS ("en" / "in") */
+    .bilingual-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.1;
+      z-index: 4;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 3px 7px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .lang-top { font-size: 11px; font-weight: 900; color: #ffdd44; text-transform: uppercase; }
+    .lang-bot { font-size: 11px; font-weight: 900; color: #ffffff; text-transform: uppercase; }
+
     /* TOP TIMER (STANDARD) */
     .timer-main { 
       background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%); 
@@ -113,7 +129,6 @@
 
     .timer-secondary .timer-text { font-size: 26px; font-weight: 800; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; }
     .timer-secondary.illuminated .timer-text { color: #000000; text-shadow: none; font-size: 32px; font-weight: 900; }
-    .timer-secondary .icon-box { width: 36px; height: 36px; }
 
     /* "NOW" BADGE */
     .now-badge {
@@ -153,20 +168,24 @@
       </div>
     </div>
 
-    <!-- TOP 5-MIN LOOPING TIMER (CUSTOM SEQUENCE) -->
+    <!-- TOP 5-MIN LOOPING TIMER (WITH STACKED BILINGUAL HEADER & CUSTOM SEQUENCE) -->
     <div class="glass-card timer-card timer-main">
       <div class="timer-left">
         <div class="icon-box">
           <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Icon" onerror="this.style.display='none'">
         </div>
+        <div class="bilingual-header">
+          <span class="lang-top">en</span>
+          <span class="lang-bot">in</span>
+        </div>
         <div id="main-timer-text" class="timer-text">00:10</div>
       </div>
     </div>
 
-    <!-- BOTTOM TIMER (:00 / :30 intervals) WITH ILLUMINATION & NOW BADGE -->
+    <!-- BOTTOM TIMER (:00 / :30 intervals) WITH LARGER ICON, ILLUMINATION & NOW BADGE -->
     <div id="bottom-timer-card" class="glass-card timer-card timer-secondary">
       <div class="timer-left">
-        <div class="icon-box">
+        <div class="icon-box" style="width: 48px; height: 48px;">
           <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
         </div>
         <div id="timer2-text" class="timer-text">30:00</div>
