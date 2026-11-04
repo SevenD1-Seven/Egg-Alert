@@ -168,7 +168,7 @@
       </div>
     </div>
 
-    <!-- TOP 5-MIN LOOPING TIMER (WITH STACKED BILINGUAL HEADER & CUSTOM SEQUENCE) -->
+    <!-- TOP 5-MIN LOOPING TIMER -->
     <div class="glass-card timer-card timer-main">
       <div class="timer-left">
         <div class="icon-box">
@@ -182,7 +182,7 @@
       </div>
     </div>
 
-    <!-- BOTTOM TIMER (:00 / :30 intervals) WITH LARGER ICON, ILLUMINATION & NOW BADGE -->
+    <!-- BOTTOM TIMER -->
     <div id="bottom-timer-card" class="glass-card timer-card timer-secondary">
       <div class="timer-left">
         <div class="icon-box" style="width: 48px; height: 48px;">
@@ -195,10 +195,115 @@
   </div>
 
   <script>
-    // --- SINGLE GLOBAL TIMER OFFSET ---
     const globalOffsetSec = 13;    
 
-    // Voice alert tracking variables to prevent repeating within the same trigger second
     let lastAlertResetKey = null;
     let lastAlert30SecKey = null;
-    let lastAlert445Key =
+    let lastAlert445Key = null;
+
+    function speakText(text, lang) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = lang;
+        utterance.volume = 1.0;
+        utterance.rate = 1.15;
+        utterance.pitch = 1.1;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    function updateTimers() {
+      try {
+        const now = new Date();
+        const totalSecToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds() / 1000 + globalOffsetSec;
+
+        // --- 1. TOP 5-MIN TIMER & CUSTOM SEQUENCE MAPPING ---
+        const secInto5MinBlock = ((totalSecToday % 300) + 300) % 300;
+        const rem5MinSec = 300 - secInto5MinBlock;
+
+        const currentBlockId = Math.floor(totalSecToday / 300);
+
+        // Audio Alerts
+        if (secInto5MinBlock < 1 && lastAlertResetKey !== currentBlockId) {
+          lastAlertResetKey = currentBlockId;
+          speakText("10 segundos", "es-ES");
+        }
+
+        const floorRem = Math.floor(rem5MinSec);
+        if (floorRem === 30 && lastAlert30SecKey !== currentBlockId) {
+          lastAlert30SecKey = currentBlockId;
+          speakText("30 segundos", "es-ES");
+        }
+
+        if (Math.floor(secInto5MinBlock) === 15 && lastAlert445Key !== currentBlockId) {
+          lastAlert445Key = currentBlockId;
+          speakText("Go, go, go!", "en-US");
+        }
+
+        const elMain = document.getElementById('main-timer-text');
+        let displaySec = 0;
+        if (rem5MinSec >= 291 && rem5MinSec <= 300) {
+          displaySec = rem5MinSec - 290;
+        } else if (rem5MinSec > 0 && rem5MinSec <= 290) {
+          displaySec = rem5MinSec;
+        } else {
+          displaySec = 0;
+        }
+
+        const m5 = Math.floor(displaySec / 60);
+        const s5 = Math.floor(displaySec % 60);
+        if (elMain) {
+          elMain.innerText = `${String(m5).padStart(2, '0')}:${String(s5).padStart(2, '0')}`;
+        }
+
+        const mainIcon = document.getElementById('main-icon');
+        if (mainIcon) {
+          if (rem5MinSec <= 290 && rem5MinSec > 0) {
+            mainIcon.src = 'moon_icon.jpg';
+          } else {
+            mainIcon.src = 'sun_icon.jpg';
+          }
+        }
+
+        // --- 2. BOTTOM TIMER ---
+        const secInto30MinBlock = ((totalSecToday % 1800) + 1800) % 1800;
+        const rem30MinSec = 1800 - secInto30MinBlock;
+
+        const bottomCard = document.getElementById('bottom-timer-card');
+        const bottomContainer = document.getElementById('bottom-indicator-container');
+
+        const isIlluminated = secInto30MinBlock < 300;
+
+        if (bottomCard) {
+          if (isIlluminated) {
+            bottomCard.classList.add('illuminated');
+          } else {
+            bottomCard.classList.remove('illuminated');
+          }
+        }
+
+        if (bottomContainer) {
+          if (isIlluminated) {
+            bottomContainer.innerHTML = '<div class="now-badge">NOW</div>';
+          } else {
+            bottomContainer.innerHTML = '';
+          }
+        }
+
+        const m30 = Math.floor(rem30MinSec / 60);
+        const s30 = Math.floor(rem30MinSec % 60);
+        const elT2 = document.getElementById('timer2-text');
+        if (elT2) {
+          elT2.innerText = `${String(m30).padStart(2, '0')}:${String(s30).padStart(2, '0')}`;
+        }
+      } catch (err) {
+        console.error("Timer update error:", err);
+      }
+    }
+
+    setInterval(updateTimers, 200);
+    updateTimers();
+  </script>
+</body>
+</html>
