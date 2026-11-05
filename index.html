@@ -104,27 +104,32 @@
     .lang-top { font-size: 11px; font-weight: 900; color: #ffdd44; text-transform: uppercase; }
     .lang-bot { font-size: 11px; font-weight: 900; color: #ffffff; text-transform: uppercase; }
 
-    /* TOP TIMER (STANDARD) */
+    /* TOP TIMER (DEFAULT YELLOW, SWITCHES TO BANNER STYLE WHEN SUN ICON IS ACTIVE) */
     .timer-main { 
       background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%); 
       border-color: #ffe680; 
     }
+    .timer-main.banner-style {
+      background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
+      border-color: rgba(107, 130, 160, 0.6);
+    }
     .timer-main .timer-text { font-size: 32px; font-weight: 900; color: #000000; z-index: 4; }
+    .timer-main.banner-style .timer-text { color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; }
 
-    /* BOTTOM TIMER WITH ILLUMINATION / GLOW EFFECT & NOW BADGE */
+    /* BOTTOM TIMER WITH NEON GREEN ILLUMINATION & GLOW EFFECT */
     .timer-secondary {
       background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
       border-color: rgba(107, 130, 160, 0.6);
     }
     .timer-secondary.illuminated {
-      background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%);
-      box-shadow: 0 0 25px #ffd700, 0 0 50px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.9);
+      background: linear-gradient(180deg, rgba(0, 255, 128, 0.7) 0%, rgba(0, 204, 102, 0.75) 50%, rgba(0, 153, 76, 0.8) 100%);
+      box-shadow: 0 0 25px #00ff80, 0 0 50px rgba(0, 255, 128, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.9);
       border-color: #ffffff;
-      animation: pulse-glow 1s ease-in-out infinite alternate;
+      animation: pulse-glow-green 1s ease-in-out infinite alternate;
     }
-    @keyframes pulse-glow {
-      0% { box-shadow: 0 0 15px #ffd700, inset 0 0 10px rgba(255,255,255,0.7); }
-      100% { box-shadow: 0 0 35px #fff, 0 0 60px #ffd700, inset 0 0 20px rgba(255,255,255,1); }
+    @keyframes pulse-glow-green {
+      0% { box-shadow: 0 0 15px #00ff80, inset 0 0 10px rgba(255,255,255,0.7); }
+      100% { box-shadow: 0 0 35px #fff, 0 0 60px #00ff80, inset 0 0 20px rgba(255,255,255,1); }
     }
 
     .timer-secondary .timer-text { font-size: 26px; font-weight: 800; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; }
@@ -169,7 +174,7 @@
     </div>
 
     <!-- TOP 5-MIN LOOPING TIMER -->
-    <div class="glass-card timer-card timer-main">
+    <div id="main-timer-card" class="glass-card timer-card timer-main">
       <div class="timer-left">
         <div class="icon-box">
           <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Icon" onerror="this.style.display='none'">
@@ -203,7 +208,7 @@
 
     function playAudio(filename) {
       const audio = new Audio(filename);
-      audio.volume = 1.0; // Maximum volume
+      audio.volume = 1.0;
       audio.play().catch(err => {
         console.log("Custom audio play blocked or missing file:", err);
       });
@@ -220,21 +225,18 @@
 
         const currentBlockId = Math.floor(totalSecToday / 300);
 
-        // Custom Audio File Triggers matching exact filenames:
-        // 1. Reset -> plays "10segundos.mp3"
+        // Audio Triggers
         if (secInto5MinBlock < 1 && lastAlertResetKey !== currentBlockId) {
           lastAlertResetKey = currentBlockId;
           playAudio('10segundos.mp3');
         }
 
-        // 2. Last 30 seconds -> plays "30segundos.mp3"
         const rawFloorRem = Math.floor(rem5MinSec);
         if (rawFloorRem === 30 && lastAlert30SecKey !== currentBlockId) {
           lastAlert30SecKey = currentBlockId;
           playAudio('30segundos.mp3');
         }
 
-        // 3. At 4:45 remaining -> plays "Go Go Go.mp3" (matching space in filename if applicable, or adjust if you name it without spaces)
         if (Math.floor(secInto5MinBlock) === 15 && lastAlert445Key !== currentBlockId) {
           lastAlert445Key = currentBlockId;
           playAudio('Go Go Go.mp3');
@@ -257,11 +259,21 @@
         }
 
         const mainIcon = document.getElementById('main-icon');
+        const mainCard = document.getElementById('main-timer-card');
+        
+        // Determine if Sun icon is active
+        const isSunActive = !(rem5MinSec <= 290 && rem5MinSec > 0);
+
         if (mainIcon) {
-          if (rem5MinSec <= 290 && rem5MinSec > 0) {
-            mainIcon.src = 'moon_icon.jpg';
+          mainIcon.src = isSunActive ? 'sun_icon.jpg' : 'moon_icon.jpg';
+        }
+
+        // Apply banner styling to top timer when sun icon is active, yellow when moon is active
+        if (mainCard) {
+          if (isSunActive) {
+            mainCard.classList.add('banner-style');
           } else {
-            mainIcon.src = 'sun_icon.jpg';
+            mainCard.classList.remove('banner-style');
           }
         }
 
