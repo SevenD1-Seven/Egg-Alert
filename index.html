@@ -85,8 +85,22 @@
       padding: 0 16px; 
     }
     .timer-left { display: flex; align-items: center; gap: 12px; }
-    .icon-box { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; flex-shrink: 0; z-index: 4; }
-    .timer-icon { width: 100%; height: 100%; object-fit: contain; }
+    
+    /* LARGER ICON BOX & ICONS */
+    .icon-box { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      width: 64px; 
+      height: 64px; 
+      flex-shrink: 0; 
+      z-index: 4; 
+    }
+    .timer-icon { 
+      width: 120%; 
+      height: 120%; 
+      object-fit: contain; 
+    }
 
     /* STACKED BILINGUAL HEADER WORDS ("en" / "in") */
     .bilingual-header {
@@ -104,7 +118,7 @@
     .lang-top { font-size: 11px; font-weight: 900; color: #ffdd44; text-transform: uppercase; }
     .lang-bot { font-size: 11px; font-weight: 900; color: #ffffff; text-transform: uppercase; }
 
-    /* TOP TIMER (DEFAULT YELLOW, SWITCHES TO BANNER STYLE WHEN SUN ICON IS ACTIVE) */
+    /* TOP TIMER STYLING */
     .timer-main { 
       background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%); 
       border-color: #ffe680; 
@@ -135,17 +149,17 @@
     .timer-secondary .timer-text { font-size: 26px; font-weight: 800; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; }
     .timer-secondary.illuminated .timer-text { color: #000000; text-shadow: none; font-size: 32px; font-weight: 900; }
 
-    /* "NOW" BADGE */
+    /* LARGER "NOW" BADGE */
     .now-badge {
       background: #ff2222;
       color: #ffffff;
-      font-size: 12px;
+      font-size: 16px;
       font-weight: 900;
-      padding: 3px 8px;
-      border-radius: 4px;
+      padding: 6px 12px;
+      border-radius: 6px;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow: 0 0 8px #ff0000;
+      letter-spacing: 1.5px;
+      box-shadow: 0 0 12px #ff0000;
       animation: flash-now 0.8s infinite alternate;
       z-index: 4;
     }
@@ -190,7 +204,7 @@
     <!-- BOTTOM TIMER -->
     <div id="bottom-timer-card" class="glass-card timer-card timer-secondary">
       <div class="timer-left">
-        <div class="icon-box" style="width: 48px; height: 48px;">
+        <div class="icon-box">
           <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
         </div>
         <div id="timer2-text" class="timer-text">30:00</div>
@@ -205,6 +219,7 @@
     let lastAlertResetKey = null;
     let lastAlert30SecKey = null;
     let lastAlert445Key = null;
+    let lastBottomResetKey = null; // Tracks bottom timer reset for event.mp3
 
     function playAudio(filename) {
       const audio = new Audio(filename);
@@ -225,7 +240,7 @@
 
         const currentBlockId = Math.floor(totalSecToday / 300);
 
-        // Audio Triggers
+        // Audio Triggers for Top Timer
         if (secInto5MinBlock < 1 && lastAlertResetKey !== currentBlockId) {
           lastAlertResetKey = currentBlockId;
           playAudio('10segundos.mp3');
@@ -261,14 +276,12 @@
         const mainIcon = document.getElementById('main-icon');
         const mainCard = document.getElementById('main-timer-card');
         
-        // Determine if Sun icon is active
         const isSunActive = !(rem5MinSec <= 290 && rem5MinSec > 0);
 
         if (mainIcon) {
           mainIcon.src = isSunActive ? 'sun_icon.jpg' : 'moon_icon.jpg';
         }
 
-        // Apply banner styling to top timer when sun icon is active, yellow when moon is active
         if (mainCard) {
           if (isSunActive) {
             mainCard.classList.add('banner-style');
@@ -280,6 +293,13 @@
         // --- 2. BOTTOM TIMER ---
         const secInto30MinBlock = ((totalSecToday % 1800) + 1800) % 1800;
         const rem30MinSec = 1800 - secInto30MinBlock;
+        const currentBottomBlockId = Math.floor(totalSecToday / 1800);
+
+        // Audio Trigger for Bottom Timer Reset -> event.mp3
+        if (secInto30MinBlock < 1 && lastBottomResetKey !== currentBottomBlockId) {
+          lastBottomResetKey = currentBottomBlockId;
+          playAudio('event.mp3');
+        }
 
         const bottomCard = document.getElementById('bottom-timer-card');
         const bottomContainer = document.getElementById('bottom-indicator-container');
