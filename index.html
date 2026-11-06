@@ -123,36 +123,40 @@
       background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%); 
       border-color: rgba(107, 130, 160, 0.6);
     }
-    .timer-main .timer-text { font-size: 32px; font-weight: 900; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; }
+    .timer-main .timer-text { font-size: 36px; font-weight: 900; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; letter-spacing: 1px; }
 
     /* STANDARD YELLOW STATE (10s to 15s) */
     .timer-main.yellow-state {
       background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%);
       border-color: #ffe680;
     }
-    .timer-main.yellow-state .timer-text { color: #000000; text-shadow: none; }
+    .timer-main.yellow-state .timer-text { color: #000000; text-shadow: none; font-size: 36px; font-weight: 900; }
 
-    /* STEADY GLOWING STATE (15s to end - NO FLASHING) */
+    /* STEADY GLOWING STATE ON TOP TIMER (NO FLASHING) */
     .timer-main.glowing-state {
       background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%);
       box-shadow: 0 0 25px #ffd700, 0 0 50px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.9);
       border-color: #ffffff;
     }
-    .timer-main.glowing-state .timer-text { color: #000000; text-shadow: none; }
+    .timer-main.glowing-state .timer-text { color: #000000; text-shadow: none; font-size: 36px; font-weight: 900; }
 
-    /* BOTTOM TIMER WITH STEADY NEON GREEN ILLUMINATION */
+    /* BOTTOM TIMER WITH FLASHING NEON GREEN ILLUMINATION */
     .timer-secondary {
       background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
       border-color: rgba(107, 130, 160, 0.6);
     }
     .timer-secondary.illuminated {
       background: linear-gradient(180deg, rgba(0, 255, 128, 0.7) 0%, rgba(0, 204, 102, 0.75) 50%, rgba(0, 153, 76, 0.8) 100%);
-      box-shadow: 0 0 25px #00ff80, 0 0 50px rgba(0, 255, 128, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.9);
       border-color: #ffffff;
+      animation: pulse-glow-green 1s ease-in-out infinite alternate;
+    }
+    @keyframes pulse-glow-green {
+      0% { box-shadow: 0 0 15px #00ff80, inset 0 0 10px rgba(255,255,255,0.7); }
+      100% { box-shadow: 0 0 35px #fff, 0 0 60px #00ff80, inset 0 0 20px rgba(255,255,255,1); }
     }
 
-    .timer-secondary .timer-text { font-size: 26px; font-weight: 800; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; }
-    .timer-secondary.illuminated .timer-text { color: #000000; text-shadow: none; font-size: 32px; font-weight: 900; }
+    .timer-secondary .timer-text { font-size: 34px; font-weight: 900; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; letter-spacing: 1px; }
+    .timer-secondary.illuminated .timer-text { color: #000000; text-shadow: none; font-size: 36px; font-weight: 900; }
 
     /* "NOW" BADGE */
     .now-badge {
@@ -326,7 +330,6 @@
           }
         }
 
-        // 5-minute countdown (05:00 to 00:00) then 25-minute countdown (25:00 to 00:00)
         let display30Sec;
         if (secInto30MinBlock < 300) {
           display30Sec = 300 - secInto30MinBlock;
