@@ -5,9 +5,10 @@
   <title>24/7 Stream Overlay - Master Dashboard</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    /* TRANSPARENT BACKGROUND FOR LIVE STREAM FEED */
     body { 
-      background: url('noFilter.webp') no-repeat center center fixed;
-      background-size: cover;
+      background: transparent;
       font-family: 'Arial Black', Impact, sans-serif; 
       overflow: hidden; 
       width: 100vw; 
@@ -27,7 +28,7 @@
       z-index: 10;
     }
 
-    /* MORE TRANSPARENT GLASSY METALLIC BLUE THEME */
+    /* GLASSY METALLIC BLUE THEME (DEFAULT FOR 0-10s) */
     .glass-card {
       position: relative;
       border-radius: 16px;
@@ -76,7 +77,7 @@
       text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 0 10px #ff0000;
     }
 
-    /* FIXED HEIGHT FOR STABLE TIMER CARDS */
+    /* STABLE TIMER CARDS */
     .timer-card { 
       height: 75px; 
       display: flex; 
@@ -86,7 +87,6 @@
     }
     .timer-left { display: flex; align-items: center; gap: 12px; }
     
-    /* LARGER ICON BOX & ICONS */
     .icon-box { 
       display: flex; 
       align-items: center; 
@@ -102,7 +102,7 @@
       object-fit: contain; 
     }
 
-    /* STACKED BILINGUAL HEADER WORDS ("en" / "in") */
+    /* STACKED BILINGUAL HEADER WORDS */
     .bilingual-header {
       display: flex;
       flex-direction: column;
@@ -118,19 +118,35 @@
     .lang-top { font-size: 11px; font-weight: 900; color: #ffdd44; text-transform: uppercase; }
     .lang-bot { font-size: 11px; font-weight: 900; color: #ffffff; text-transform: uppercase; }
 
-    /* TOP TIMER STYLING */
+    /* TOP TIMER DEFAULT (GLASSY BANNER STYLE FOR 0-10s) */
     .timer-main { 
-      background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%); 
-      border-color: #ffe680; 
-    }
-    .timer-main.banner-style {
-      background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
+      background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%); 
       border-color: rgba(107, 130, 160, 0.6);
     }
-    .timer-main .timer-text { font-size: 32px; font-weight: 900; color: #000000; z-index: 4; }
-    .timer-main.banner-style .timer-text { color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; }
+    .timer-main .timer-text { font-size: 32px; font-weight: 900; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; }
 
-    /* BOTTOM TIMER WITH NEON GREEN ILLUMINATION & GLOW EFFECT */
+    /* STANDARD YELLOW STATE (10s to 15s) */
+    .timer-main.yellow-state {
+      background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%);
+      border-color: #ffe680;
+    }
+    .timer-main.yellow-state .timer-text { color: #000000; text-shadow: none; }
+
+    /* GLOWING STATE (15s to end) */
+    .timer-main.glowing-state {
+      background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%);
+      box-shadow: 0 0 25px #ffd700, 0 0 50px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.9);
+      border-color: #ffffff;
+      animation: pulse-glow-yellow 1s ease-in-out infinite alternate;
+    }
+    .timer-main.glowing-state .timer-text { color: #000000; text-shadow: none; }
+
+    @keyframes pulse-glow-yellow {
+      0% { box-shadow: 0 0 15px #ffd700, inset 0 0 10px rgba(255,255,255,0.7); }
+      100% { box-shadow: 0 0 35px #fff, 0 0 60px #ffd700, inset 0 0 20px rgba(255,255,255,1); }
+    }
+
+    /* BOTTOM TIMER WITH NEON GREEN ILLUMINATION */
     .timer-secondary {
       background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
       border-color: rgba(107, 130, 160, 0.6);
@@ -149,7 +165,7 @@
     .timer-secondary .timer-text { font-size: 26px; font-weight: 800; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; z-index: 4; }
     .timer-secondary.illuminated .timer-text { color: #000000; text-shadow: none; font-size: 32px; font-weight: 900; }
 
-    /* LARGER "NOW" BADGE */
+    /* "NOW" BADGE */
     .now-badge {
       background: #ff2222;
       color: #ffffff;
@@ -219,7 +235,7 @@
     let lastAlertResetKey = null;
     let lastAlert30SecKey = null;
     let lastAlert445Key = null;
-    let lastBottomResetKey = null; // Tracks bottom timer reset for event.mp3
+    let lastBottomResetKey = null;
 
     function playAudio(filename) {
       const audio = new Audio(filename);
@@ -234,10 +250,9 @@
         const now = new Date();
         const totalSecToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds() / 1000 + globalOffsetSec;
 
-        // --- 1. TOP 5-MIN TIMER & CUSTOM SEQUENCE MAPPING ---
+        // --- 1. TOP 5-MIN TIMER ---
         const secInto5MinBlock = ((totalSecToday % 300) + 300) % 300;
         const rem5MinSec = 300 - secInto5MinBlock;
-
         const currentBlockId = Math.floor(totalSecToday / 300);
 
         // Audio Triggers for Top Timer
@@ -282,17 +297,21 @@
           mainIcon.src = isSunActive ? 'sun_icon.jpg' : 'moon_icon.jpg';
         }
 
+        // Top Timer Color Cycle Rules:
+        // - 0 to 10 seconds into block: Glassy banner style (default)
+        // - 10 to 15 seconds into block: Standard yellow state
+        // - 15 seconds onwards: Illuminated & glowing
         if (mainCard) {
-          if (isSunActive) {
-            mainCard.classList.add('banner-style');
-          } else {
-            mainCard.classList.remove('banner-style');
+          mainCard.classList.remove('yellow-state', 'glowing-state');
+          if (secInto5MinBlock >= 10 && secInto5MinBlock < 15) {
+            mainCard.classList.add('yellow-state');
+          } else if (secInto5MinBlock >= 15) {
+            mainCard.classList.add('glowing-state');
           }
         }
 
         // --- 2. BOTTOM TIMER ---
         const secInto30MinBlock = ((totalSecToday % 1800) + 1800) % 1800;
-        const rem30MinSec = 1800 - secInto30MinBlock;
         const currentBottomBlockId = Math.floor(totalSecToday / 1800);
 
         // Audio Trigger for Bottom Timer Reset -> event.mp3
@@ -322,8 +341,10 @@
           }
         }
 
-        const m30 = Math.floor(rem30MinSec / 60);
-        const s30 = Math.floor(rem30MinSec % 60);
+        let display30Sec = 1800 - secInto30MinBlock;
+
+        const m30 = Math.floor(display30Sec / 60);
+        const s30 = Math.floor(display30Sec % 60);
         const elT2 = document.getElementById('timer2-text');
         if (elT2) {
           elT2.innerText = `${String(m30).padStart(2, '0')}:${String(s30).padStart(2, '0')}`;
