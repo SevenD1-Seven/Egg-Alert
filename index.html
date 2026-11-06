@@ -225,10 +225,12 @@
   <script>
     const globalOffsetSec = 13;    
 
-    let lastAlertResetKey = null;
-    let lastAlert30SecKey = null;
-    let lastAlert445Key = null;
-    let lastBottomResetKey = null;
+    // Initialize tracking keys to current time blocks on startup so refreshes don't re-trigger past audio
+    const initialTotalSec = new Date().getHours() * 3600 + new Date().getMinutes() * 60 + new Date().getSeconds() + globalOffsetSec;
+    let lastAlertResetKey = Math.floor(initialTotalSec / 300);
+    let lastAlert30SecKey = Math.floor(initialTotalSec / 300);
+    let lastAlert445Key = Math.floor(initialTotalSec / 300);
+    let lastBottomResetKey = Math.floor(initialTotalSec / 1800);
 
     function playAudio(filename) {
       const audio = new Audio(filename);
