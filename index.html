@@ -118,12 +118,19 @@
     .lang-top { font-size: 14px; font-weight: 900; color: #ffdd44; text-transform: uppercase; }
     .lang-bot { font-size: 14px; font-weight: 900; color: #ffffff; text-transform: uppercase; }
 
-    /* TOP TIMER DEFAULT (GLASSY STATE -> BLACK FONT) */
+    /* TOP TIMER DEFAULT (GLASSY STATE -> BLACK FONT WITH WHITE OUTLINE) */
     .timer-main { 
       background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%); 
       border-color: rgba(107, 130, 160, 0.6);
     }
-    .timer-main .timer-text { font-size: 36px; font-weight: 900; color: #000000; text-shadow: none; z-index: 4; letter-spacing: 1px; }
+    .timer-main .timer-text { 
+      font-size: 36px; 
+      font-weight: 900; 
+      color: #000000; 
+      text-shadow: -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 2px 2px 0 #ffffff; 
+      z-index: 4; 
+      letter-spacing: 1px; 
+    }
 
     /* STANDARD YELLOW STATE & GLOWING STATE (WHITE FONT WITH BLACK OUTLINE) */
     .timer-main.yellow-state {
@@ -139,12 +146,19 @@
     }
     .timer-main.glowing-state .timer-text { color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; font-size: 36px; font-weight: 900; }
 
-    /* BOTTOM TIMER */
+    /* BOTTOM TIMER (DEFAULT 25-MIN -> BLACK FONT WITH WHITE OUTLINE) */
     .timer-secondary {
       background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
       border-color: rgba(107, 130, 160, 0.6);
     }
-    .timer-secondary .timer-text { font-size: 34px; font-weight: 900; color: #000000; text-shadow: none; z-index: 4; letter-spacing: 1px; }
+    .timer-secondary .timer-text { 
+      font-size: 34px; 
+      font-weight: 900; 
+      color: #000000; 
+      text-shadow: -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 2px 2px 0 #ffffff; 
+      z-index: 4; 
+      letter-spacing: 1px; 
+    }
 
     .timer-secondary.illuminated {
       background: linear-gradient(180deg, rgba(0, 255, 128, 0.7) 0%, rgba(0, 204, 102, 0.75) 50%, rgba(0, 153, 76, 0.8) 100%);
@@ -267,16 +281,11 @@
         const elMain = document.getElementById('main-timer-text');
         let displaySec = 0;
         
-        // 4:50 to 4:46 remaining (rem5MinSec between 286 and 290) -> 5-second count down (5 down to 1)
         if (rem5MinSec > 285 && rem5MinSec <= 290) {
           displaySec = rem5MinSec - 285;
-        } 
-        // 4:45 to 0 remaining (rem5MinSec between 0 and 285) -> count down from 4:45 to 0
-        else if (rem5MinSec > 0 && rem5MinSec <= 285) {
+        } else if (rem5MinSec > 0 && rem5MinSec <= 285) {
           displaySec = rem5MinSec;
-        } 
-        // First 10 seconds of reset block (rem5MinSec between 290 and 300)
-        else if (rem5MinSec >= 290 && rem5MinSec <= 300) {
+        } else if (rem5MinSec >= 290 && rem5MinSec <= 300) {
           displaySec = rem5MinSec - 290;
         } else {
           displaySec = 0;
