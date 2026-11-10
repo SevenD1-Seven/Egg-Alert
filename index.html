@@ -79,13 +79,13 @@
 
     /* STABLE TIMER CARDS */
     .timer-card { 
+      position: relative;
       height: 75px; 
       display: flex; 
       align-items: center; 
-      justify-content: space-between; 
       padding: 0 16px; 
     }
-    .timer-left { display: flex; align-items: center; gap: 12px; }
+    .timer-left { display: flex; align-items: center; gap: 12px; z-index: 4; }
     
     .icon-box { 
       display: flex; 
@@ -118,6 +118,16 @@
     .lang-top { font-size: 14px; font-weight: 900; color: #ffdd44; text-transform: uppercase; }
     .lang-bot { font-size: 14px; font-weight: 900; color: #ffffff; text-transform: uppercase; }
 
+    /* ABSOLUTE CENTER TIMER TEXT REGARDLESS OF IMAGES */
+    .absolute-center-timer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: center;
+      pointer-events: none;
+      z-index: 2;
+    }
+
     /* TOP TIMER DEFAULT (GLASSY STATE -> BLACK FONT WITH WHITE OUTLINE) */
     .timer-main { 
       background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%); 
@@ -128,7 +138,6 @@
       font-weight: 900; 
       color: #000000; 
       text-shadow: -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 2px 2px 0 #ffffff; 
-      z-index: 4; 
       letter-spacing: 1px; 
     }
 
@@ -148,7 +157,6 @@
 
     /* BOTTOM TIMER (DEFAULT -> BLACK FONT WITH WHITE OUTLINE) */
     .timer-secondary {
-      position: relative;
       background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
       border-color: rgba(107, 130, 160, 0.6);
     }
@@ -157,7 +165,6 @@
       font-weight: 900; 
       color: #000000; 
       text-shadow: -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 2px 2px 0 #ffffff; 
-      z-index: 4; 
       letter-spacing: 1px; 
     }
 
@@ -172,10 +179,12 @@
     }
     .timer-secondary.illuminated .timer-text { color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; font-size: 36px; font-weight: 900; }
 
-    /* "NOW" BADGE */
+    /* "NOW" BADGE VERTICALLY CENTERED */
     .now-badge {
       position: absolute;
       right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
       background: #ff2222;
       color: #ffffff;
       font-size: 16px;
@@ -189,8 +198,8 @@
       z-index: 4;
     }
     @keyframes flash-now {
-      0% { opacity: 0.7; transform: scale(0.95); }
-      100% { opacity: 1; transform: scale(1.05); }
+      0% { opacity: 0.7; transform: translateY(-50%) scale(0.95); }
+      100% { opacity: 1; transform: translateY(-50%) scale(1.05); }
     }
   </style>
 </head>
@@ -212,7 +221,7 @@
       </div>
     </div>
 
-    <!-- TOP 5-MIN LOOPING TIMER (Icon on far left, EN/IN box right next to it, timer text on the right) -->
+    <!-- TOP 5-MIN LOOPING TIMER -->
     <div id="main-timer-card" class="glass-card timer-card timer-main">
       <div class="timer-left">
         <div class="icon-box">
@@ -223,16 +232,20 @@
           <span class="lang-bot">in</span>
         </div>
       </div>
-      <div id="main-timer-text" class="timer-text">00:10</div>
+      <div class="absolute-center-timer">
+        <span id="main-timer-text" class="timer-text">00:10</span>
+      </div>
     </div>
 
-    <!-- BOTTOM TIMER (:25 & :55 Resets) - Icon on far left, Timer strictly centered in remaining space -->
+    <!-- BOTTOM TIMER (:25 & :55 Resets) -->
     <div id="bottom-timer-card" class="glass-card timer-card timer-secondary">
-      <div class="icon-box">
-        <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
+      <div class="timer-left">
+        <div class="icon-box">
+          <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
+        </div>
       </div>
-      <div style="flex: 1; display: flex; justify-content: center;">
-        <div id="timer2-text" class="timer-text">30:00</div>
+      <div class="absolute-center-timer">
+        <span id="timer2-text" class="timer-text">30:00</span>
       </div>
       <div id="bottom-indicator-container"></div>
     </div>
@@ -258,12 +271,9 @@
       return new Date(Date.now() + totalOffset * 1000);
     }
 
-    const initialLagDate = getLagCompensatedDate();
-    const initialTotalSec = initialLagDate.getHours() * 3600 + initialLagDate.getMinutes() * 60 + initialLagDate.getSeconds();
-    
-    let lastAlertResetKey = Math.floor(initialTotalSec / 300);
-    let lastAlert30SecKey = Math.floor(initialTotalSec / 300);
-    let lastAlert445Key = Math.floor(initialTotalSec / 300);
+    let lastAlertResetKey = -1;
+    let lastAlert30SecKey = -1;
+    let lastAlert445Key = -1;
     let lastBottomResetKey = -1;
 
     function playAudio(filename) {
@@ -295,18 +305,21 @@
         const rem5MinSec = 300 - secInto5MinBlock;
         const currentBlockId = Math.floor(totalSecToday / 300);
 
-        if (secInto5MinBlock < 1 && lastAlertResetKey !== currentBlockId) {
+        // Reset start voice alert (10segundos.mp3)
+        if (secInto5MinBlock < 0.5 && lastAlertResetKey !== currentBlockId) {
           lastAlertResetKey = currentBlockId;
           playAudio('10segundos.mp3');
         }
 
+        // 30 seconds remaining alert (30segundos.mp3)
         const rawFloorRem = Math.floor(rem5MinSec);
         if (rawFloorRem === 30 && lastAlert30SecKey !== currentBlockId) {
           lastAlert30SecKey = currentBlockId;
           playAudio('30segundos.mp3');
         }
 
-        if (rawFloorRem === 285 && lastAlert445Key !== currentBlockId) {
+        // Go Go Go alert at 4:45 mark (15 seconds elapsed into 5min block)
+        if (Math.floor(secInto5MinBlock) === 15 && lastAlert445Key !== currentBlockId) {
           lastAlert445Key = currentBlockId;
           playAudio('Go Go Go.mp3');
         }
