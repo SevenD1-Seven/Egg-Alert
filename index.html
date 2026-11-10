@@ -223,9 +223,9 @@
       </div>
     </div>
 
-    <!-- BOTTOM TIMER (:25 & :55 Resets) -->
+    <!-- BOTTOM TIMER (:25 & :55 Resets) - Perfectly Centered Content -->
     <div id="bottom-timer-card" class="glass-card timer-card timer-secondary">
-      <div class="timer-left">
+      <div class="timer-left" style="width: 100%; justify-content: center;">
         <div class="icon-box">
           <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
         </div>
@@ -234,7 +234,7 @@
       <div id="bottom-indicator-container"></div>
     </div>
 
-    <!-- LOCAL TIME DIGITAL CLOCK (Placed directly below the bottom event timer) -->
+    <!-- LOCAL TIME DIGITAL CLOCK (Placed below the bottom event timer) -->
     <div class="glass-card timer-card">
       <div class="timer-left" style="width: 100%; justify-content: center;">
         <div id="local-clock-text" class="timer-text" style="font-size: 26px; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; letter-spacing: 2px;">12:00:00 AM</div>
@@ -247,7 +247,7 @@
     // MANUAL TIMING ADJUSTMENT CONTROLS
     // =========================================================================
     // 1. streamLagOffsetSec: Adjusts all timers and the clock forward/backward 
-    //    to compensate for stream latency (e.g., -5 seconds).
+    //    to compensate for stream latency.
     const streamLagOffsetSec = 17;
 
     // 2. manualTimerCorrectionSec: Fine-tune this value manually if your game 
@@ -316,11 +316,14 @@
         const elMain = document.getElementById('main-timer-text');
         let displaySec = 0;
         
-        if (rem5MinSec > 285 && rem5MinSec <= 290) {
-          displaySec = rem5MinSec - 285;
-        } else if (rem5MinSec > 0 && rem5MinSec <= 285) {
+        // Custom sequence logic: 
+        // 4:50 to 4:46 remaining (rem5MinSec between 290 and 294 inclusive) counts down 5 to 1.
+        // Otherwise standard counting from 4:45 down to 00:00.
+        if (rem5MinSec >= 286 && rem5MinSec <= 290) {
+          displaySec = rem5MinSec - 285; // yields 5 down to 1
+        } else if (rem5MinSec > 0 && rem5MinSec < 286) {
           displaySec = rem5MinSec;
-        } else if (rem5MinSec >= 290 && rem5MinSec <= 300) {
+        } else if (rem5MinSec > 290 && rem5MinSec <= 300) {
           displaySec = rem5MinSec - 290;
         } else {
           displaySec = 0;
@@ -335,7 +338,8 @@
         const mainIcon = document.getElementById('main-icon');
         const mainCard = document.getElementById('main-timer-card');
         
-        const isSunActive = !(rem5MinSec <= 290 && rem5MinSec > 0);
+        // Sun image active from 5:00 down to 4:51 remaining (rem5MinSec > 290)
+        const isSunActive = (rem5MinSec > 290 && rem5MinSec <= 300);
 
         if (mainIcon) {
           mainIcon.src = isSunActive ? 'sun_icon.jpg' : 'moon_icon.jpg';
