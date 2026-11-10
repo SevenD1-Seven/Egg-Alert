@@ -88,8 +88,6 @@
     .timer-left { display: flex; align-items: center; gap: 12px; }
     
     .icon-box { 
-      position: absolute;
-      left: 16px;
       display: flex; 
       align-items: center; 
       justify-content: center; 
@@ -215,7 +213,7 @@
       </div>
     </div>
 
-    <!-- TOP 5-MIN LOOPING TIMER -->
+    <!-- TOP 5-MIN LOOPING TIMER (Restored original layout structure) -->
     <div id="main-timer-card" class="glass-card timer-card timer-main">
       <div class="timer-left">
         <div class="icon-box">
@@ -225,11 +223,11 @@
           <span class="lang-top">en</span>
           <span class="lang-bot">in</span>
         </div>
-        <div id="main-timer-text" class="timer-text">00:10</div>
       </div>
+      <div id="main-timer-text" class="timer-text">00:10</div>
     </div>
 
-    <!-- BOTTOM TIMER (:25 & :55 Resets) - Icon Left, Timer Strictly Centered -->
+    <!-- BOTTOM TIMER (:25 & :55 Resets) -->
     <div id="bottom-timer-card" class="glass-card timer-card timer-secondary">
       <div class="icon-box">
         <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
@@ -307,7 +305,6 @@
           playAudio('30segundos.mp3');
         }
 
-        // Trigger 'Go Go Go.mp3' exactly when top timer hits 4:45 remaining (rem5MinSec === 285)
         if (rawFloorRem === 285 && lastAlert445Key !== currentBlockId) {
           lastAlert445Key = currentBlockId;
           playAudio('Go Go Go.mp3');
