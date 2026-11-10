@@ -79,4 +79,340 @@
 
     /* STABLE TIMER CARDS */
     .timer-card { 
-      height: 75px
+      height: 75px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      padding: 0 16px; 
+    }
+    .timer-left { display: flex; align-items: center; gap: 12px; }
+    
+    .icon-box { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      width: 64px; 
+      height: 64px; 
+      flex-shrink: 0; 
+      z-index: 4; 
+    }
+    .timer-icon { 
+      width: 120%; 
+      height: 120%; 
+      object-fit: contain; 
+    }
+
+    /* BILINGULAR HEADER BLOCK */
+    .bilingual-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.1;
+      z-index: 4;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .lang-top { font-size: 14px; font-weight: 900; color: #ffdd44; text-transform: uppercase; }
+    .lang-bot { font-size: 14px; font-weight: 900; color: #ffffff; text-transform: uppercase; }
+
+    /* TOP TIMER DEFAULT (GLASSY STATE -> BLACK FONT WITH WHITE OUTLINE) */
+    .timer-main { 
+      background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%); 
+      border-color: rgba(107, 130, 160, 0.6);
+    }
+    .timer-main .timer-text { 
+      font-size: 36px; 
+      font-weight: 900; 
+      color: #000000; 
+      text-shadow: -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 2px 2px 0 #ffffff; 
+      z-index: 4; 
+      letter-spacing: 1px; 
+    }
+
+    /* STANDARD YELLOW STATE & GLOWING STATE (WHITE FONT WITH BLACK OUTLINE) */
+    .timer-main.yellow-state {
+      background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%);
+      border-color: #ffe680;
+    }
+    .timer-main.yellow-state .timer-text { color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; font-size: 36px; font-weight: 900; }
+
+    .timer-main.glowing-state {
+      background: linear-gradient(180deg, rgba(255, 215, 0, 0.7) 0%, rgba(204, 163, 0, 0.75) 50%, rgba(153, 122, 0, 0.8) 100%);
+      box-shadow: 0 0 25px #ffd700, 0 0 50px rgba(255, 215, 0, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.9);
+      border-color: #ffffff;
+    }
+    .timer-main.glowing-state .timer-text { color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; font-size: 36px; font-weight: 900; }
+
+    /* BOTTOM TIMER (DEFAULT -> BLACK FONT WITH WHITE OUTLINE) */
+    .timer-secondary {
+      position: relative;
+      background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
+      border-color: rgba(107, 130, 160, 0.6);
+    }
+    .timer-secondary .timer-text { 
+      font-size: 34px; 
+      font-weight: 900; 
+      color: #000000; 
+      text-shadow: -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 2px 2px 0 #ffffff; 
+      z-index: 4; 
+      letter-spacing: 1px; 
+    }
+
+    .timer-secondary.illuminated {
+      background: linear-gradient(180deg, rgba(0, 255, 128, 0.7) 0%, rgba(0, 204, 102, 0.75) 50%, rgba(0, 153, 76, 0.8) 100%);
+      border-color: #ffffff;
+      animation: pulse-glow-green 1s ease-in-out infinite alternate;
+    }
+    @keyframes pulse-glow-green {
+      0% { box-shadow: 0 0 15px #00ff80, inset 0 0 10px rgba(255,255,255,0.7); }
+      100% { box-shadow: 0 0 35px #fff, 0 0 60px #00ff80, inset 0 0 20px rgba(255,255,255,1); }
+    }
+    .timer-secondary.illuminated .timer-text { color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; font-size: 36px; font-weight: 900; }
+
+    /* "NOW" BADGE */
+    .now-badge {
+      position: absolute;
+      right: 16px;
+      background: #ff2222;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      box-shadow: 0 0 12px #ff0000;
+      animation: flash-now 0.8s infinite alternate;
+      z-index: 4;
+    }
+    @keyframes flash-now {
+      0% { opacity: 0.7; transform: scale(0.95); }
+      100% { opacity: 1; transform: scale(1.05); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- RIGHT SIDEBAR: BANNERS & TIMERS -->
+  <div class="right-sidebar">
+    <div class="glass-card banner-card">
+      <img class="banner-bg" src="banner1_bg.gif" alt="" onerror="this.style.display='none'">
+      <div class="marquee-wrapper">
+        <div class="marquee-text">¿Buscas alguna <span class="highlight-word">fusión</span>? Deja tu user y un comentario.</div>
+      </div>
+    </div>
+
+    <div class="glass-card banner-card">
+      <img class="banner-bg" src="banner2_bg.gif" alt="" onerror="this.style.display='none'">
+      <div class="marquee-wrapper">
+        <div class="marquee-text">Looking for a <span class="highlight-word">merge</span>? Leave your user and a comment.</div>
+      </div>
+    </div>
+
+    <!-- TOP 5-MIN LOOPING TIMER (Icon on far left, EN/IN box right next to it, timer text on the right) -->
+    <div id="main-timer-card" class="glass-card timer-card timer-main">
+      <div class="timer-left">
+        <div class="icon-box">
+          <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Icon" onerror="this.style.display='none'">
+        </div>
+        <div class="bilingual-header">
+          <span class="lang-top">en</span>
+          <span class="lang-bot">in</span>
+        </div>
+      </div>
+      <div id="main-timer-text" class="timer-text">00:10</div>
+    </div>
+
+    <!-- BOTTOM TIMER (:25 & :55 Resets) - Icon on far left, Timer strictly centered in remaining space -->
+    <div id="bottom-timer-card" class="glass-card timer-card timer-secondary">
+      <div class="icon-box">
+        <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
+      </div>
+      <div style="flex: 1; display: flex; justify-content: center;">
+        <div id="timer2-text" class="timer-text">30:00</div>
+      </div>
+      <div id="bottom-indicator-container"></div>
+    </div>
+
+    <!-- LOCAL TIME DIGITAL CLOCK (Placed below the bottom event timer) -->
+    <div class="glass-card timer-card">
+      <div class="timer-left" style="width: 100%; justify-content: center;">
+        <div id="local-clock-text" class="timer-text" style="font-size: 26px; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; letter-spacing: 2px;">12:00:00 AM</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // MANUAL TIMING ADJUSTMENT CONTROLS
+    // =========================================================================
+    const streamLagOffsetSec = 17;
+    const manualTimerCorrectionSec = 0; 
+    // =========================================================================
+
+    function getLagCompensatedDate() {
+      const totalOffset = streamLagOffsetSec + manualTimerCorrectionSec;
+      return new Date(Date.now() + totalOffset * 1000);
+    }
+
+    const initialLagDate = getLagCompensatedDate();
+    const initialTotalSec = initialLagDate.getHours() * 3600 + initialLagDate.getMinutes() * 60 + initialLagDate.getSeconds();
+    
+    let lastAlertResetKey = Math.floor(initialTotalSec / 300);
+    let lastAlert30SecKey = Math.floor(initialTotalSec / 300);
+    let lastAlert445Key = Math.floor(initialTotalSec / 300);
+    let lastBottomResetKey = -1;
+
+    function playAudio(filename) {
+      const audio = new Audio(filename);
+      audio.volume = 1.0;
+      audio.play().catch(err => {
+        console.log("Custom audio play blocked or missing file:", err);
+      });
+    }
+
+    function updateTimers() {
+      try {
+        const nowLag = getLagCompensatedDate();
+        const totalSecToday = nowLag.getHours() * 3600 + nowLag.getMinutes() * 60 + nowLag.getSeconds() + nowLag.getMilliseconds() / 1000;
+
+        // --- LOCAL TIME DIGITAL CLOCK ---
+        const clockEl = document.getElementById('local-clock-text');
+        if (clockEl) {
+          const hours = nowLag.getHours();
+          const minutes = nowLag.getMinutes();
+          const seconds = nowLag.getSeconds();
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          const displayHours = hours % 12 || 12;
+          clockEl.innerText = `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
+        }
+
+        // --- 1. TOP 5-MIN TIMER ---
+        const secInto5MinBlock = ((totalSecToday % 300) + 300) % 300;
+        const rem5MinSec = 300 - secInto5MinBlock;
+        const currentBlockId = Math.floor(totalSecToday / 300);
+
+        if (secInto5MinBlock < 1 && lastAlertResetKey !== currentBlockId) {
+          lastAlertResetKey = currentBlockId;
+          playAudio('10segundos.mp3');
+        }
+
+        const rawFloorRem = Math.floor(rem5MinSec);
+        if (rawFloorRem === 30 && lastAlert30SecKey !== currentBlockId) {
+          lastAlert30SecKey = currentBlockId;
+          playAudio('30segundos.mp3');
+        }
+
+        if (rawFloorRem === 285 && lastAlert445Key !== currentBlockId) {
+          lastAlert445Key = currentBlockId;
+          playAudio('Go Go Go.mp3');
+        }
+
+        const elMain = document.getElementById('main-timer-text');
+        let displaySec = 0;
+        
+        if (rem5MinSec >= 286 && rem5MinSec <= 290) {
+          displaySec = rem5MinSec - 285; 
+        } else if (rem5MinSec > 0 && rem5MinSec < 286) {
+          displaySec = rem5MinSec;
+        } else if (rem5MinSec > 290 && rem5MinSec <= 300) {
+          displaySec = rem5MinSec - 290;
+        } else {
+          displaySec = 0;
+        }
+
+        const m5 = Math.floor(displaySec / 60);
+        const s5 = Math.floor(displaySec % 60);
+        if (elMain) {
+          elMain.innerText = `${String(m5).padStart(2, '0')}:${String(s5).padStart(2, '0')}`;
+        }
+
+        const mainIcon = document.getElementById('main-icon');
+        const mainCard = document.getElementById('main-timer-card');
+        
+        const isSunActive = (rem5MinSec > 290 && rem5MinSec <= 300);
+
+        if (mainIcon) {
+          mainIcon.src = isSunActive ? 'sun_icon.jpg' : 'moon_icon.jpg';
+        }
+
+        if (mainCard) {
+          mainCard.classList.remove('yellow-state', 'glowing-state');
+          if (secInto5MinBlock >= 10 && secInto5MinBlock < 15) {
+            mainCard.classList.add('yellow-state');
+          } else if (secInto5MinBlock >= 15) {
+            mainCard.classList.add('glowing-state');
+          }
+        }
+
+        // --- 2. BOTTOM TIMER (Resets at :25 and :55 past every hour) ---
+        const hour = Math.floor(totalSecToday / 3600);
+        const secIntoHour = totalSecToday % 3600;
+
+        let lastReset, nextReset;
+        if (secIntoHour >= 3300) {
+          lastReset = hour * 3600 + 3300;
+          nextReset = (hour + 1) * 3600 + 1500; 
+        } else if (secIntoHour >= 1500) {
+          lastReset = hour * 3600 + 1500;
+          nextReset = hour * 3600 + 3300; 
+        } else {
+          lastReset = (hour - 1) * 3600 + 3300;
+          nextReset = hour * 3600 + 1500; 
+        }
+
+        const elapsedSinceReset = totalSecToday - lastReset;
+        const currentBottomBlockId = Math.floor(lastReset);
+
+        if (elapsedSinceReset >= 0 && elapsedSinceReset < 1 && lastBottomResetKey !== currentBottomBlockId) {
+          lastBottomResetKey = currentBottomBlockId;
+          playAudio('event.mp3');
+        }
+
+        const bottomCard = document.getElementById('bottom-timer-card');
+        const bottomContainer = document.getElementById('bottom-indicator-container');
+
+        const isIlluminated = elapsedSinceReset < 300; 
+
+        if (bottomCard) {
+          if (isIlluminated) {
+            bottomCard.classList.add('illuminated');
+          } else {
+            bottomCard.classList.remove('illuminated');
+          }
+        }
+
+        if (bottomContainer) {
+          if (isIlluminated) {
+            bottomContainer.innerHTML = '<div class="now-badge">NOW</div>';
+          } else {
+            bottomContainer.innerHTML = '';
+          }
+        }
+
+        let display30Sec;
+        if (isIlluminated) {
+          display30Sec = 300 - elapsedSinceReset;
+        } else {
+          display30Sec = nextReset - totalSecToday;
+        }
+
+        const m30 = Math.floor(display30Sec / 60);
+        const s30 = Math.floor(display30Sec % 60);
+        const elT2 = document.getElementById('timer2-text');
+        if (elT2) {
+          elT2.innerText = `${String(m30).padStart(2, '0')}:${String(s30).padStart(2, '0')}`;
+        }
+      } catch (err) {
+        console.error("Timer update error:", err);
+      }
+    }
+
+    setInterval(updateTimers, 200);
+    updateTimers();
+  </script>
+</body>
+</html>
