@@ -146,7 +146,7 @@
     }
     .timer-main.glowing-state .timer-text { color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; font-size: 36px; font-weight: 900; }
 
-    /* BOTTOM TIMER (DEFAULT 25-MIN -> BLACK FONT WITH WHITE OUTLINE) */
+    /* BOTTOM TIMER (DEFAULT -> BLACK FONT WITH WHITE OUTLINE) */
     .timer-secondary {
       background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
       border-color: rgba(107, 130, 160, 0.6);
@@ -209,7 +209,7 @@
       </div>
     </div>
 
-    <!-- TOP 5-MIN LOOPING TIMER -->
+    <!-- TOP 5-MIN LOOPING TIMER (3rd Counter) -->
     <div id="main-timer-card" class="glass-card timer-card timer-main">
       <div class="timer-left">
         <div class="icon-box">
@@ -223,7 +223,14 @@
       </div>
     </div>
 
-    <!-- BOTTOM TIMER -->
+    <!-- LOCAL TIME DIGITAL CLOCK (Placed directly below the 3rd counter) -->
+    <div class="glass-card timer-card">
+      <div class="timer-left" style="width: 100%; justify-content: center;">
+        <div id="local-clock-text" class="timer-text" style="font-size: 26px; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; letter-spacing: 2px;">12:00:00 AM</div>
+      </div>
+    </div>
+
+    <!-- BOTTOM TIMER (:25 & :55 Resets) -->
     <div id="bottom-timer-card" class="glass-card timer-card timer-secondary">
       <div class="timer-left">
         <div class="icon-box">
@@ -236,13 +243,20 @@
   </div>
 
   <script>
-    const globalOffsetSec = 13;    
+    // Offset to compensate for 5-second live stream lag
+    const streamLagOffsetSec = -5;
 
-    const initialTotalSec = new Date().getHours() * 3600 + new Date().getMinutes() * 60 + new Date().getSeconds() + globalOffsetSec;
+    function getLagCompensatedDate() {
+      return new Date(Date.now() + streamLagOffsetSec * 1000);
+    }
+
+    const initialLagDate = getLagCompensatedDate();
+    const initialTotalSec = initialLagDate.getHours() * 3600 + initialLagDate.getMinutes() * 60 + initialLagDate.getSeconds();
+    
     let lastAlertResetKey = Math.floor(initialTotalSec / 300);
     let lastAlert30SecKey = Math.floor(initialTotalSec / 300);
     let lastAlert445Key = Math.floor(initialTotalSec / 300);
-    let lastBottomResetKey = Math.floor(initialTotalSec / 1800);
+    let lastBottomResetKey = -1;
 
     function playAudio(filename) {
       const audio = new Audio(filename);
@@ -254,8 +268,19 @@
 
     function updateTimers() {
       try {
-        const now = new Date();
-        const totalSecToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds() + now.getMilliseconds() / 1000 + globalOffsetSec;
+        const nowLag = getLagCompensatedDate();
+        const totalSecToday = nowLag.getHours() * 3600 + nowLag.getMinutes() * 60 + nowLag.getSeconds() + nowLag.getMilliseconds() / 1000;
+
+        // --- LOCAL TIME DIGITAL CLOCK ---
+        const clockEl = document.getElementById('local-clock-text');
+        if (clockEl) {
+          const hours = nowLag.getHours();
+          const minutes = nowLag.getMinutes();
+          const seconds = nowLag.getSeconds();
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          const displayHours = hours % 12 || 12;
+          clockEl.innerText = `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
+        }
 
         // --- 1. TOP 5-MIN TIMER ---
         const secInto5MinBlock = ((totalSecToday % 300) + 300) % 300;
@@ -315,11 +340,30 @@
           }
         }
 
-        // --- 2. BOTTOM TIMER ---
-        const secInto30MinBlock = ((totalSecToday % 1800) + 1800) % 1800;
-        const currentBottomBlockId = Math.floor(totalSecToday / 1800);
+        // --- 2. BOTTOM TIMER (Resets at :25 and :55 past every hour) ---
+        const hour = Math.floor(totalSecToday / 3600);
+        const secIntoHour = totalSecToday % 3600;
 
-        if (secInto30MinBlock >= 5 && lastBottomResetKey !== currentBottomBlockId) {
+        let lastReset, nextReset;
+        if (secIntoHour >= 3300) {
+          // Past :55 of current hour
+          lastReset = hour * 3600 + 3300;
+          nextReset = (hour + 1) * 3600 + 1500; // Next hour's :25
+        } else if (secIntoHour >= 1500) {
+          // Past :25 of current hour, before :55
+          lastReset = hour * 3600 + 1500;
+          nextReset = hour * 3600 + 3300; // Current hour's :55
+        } else {
+          // Before :25 of current hour (after previous hour's :55)
+          lastReset = (hour - 1) * 3600 + 3300;
+          nextReset = hour * 3600 + 1500; // Current hour's :25
+        }
+
+        const elapsedSinceReset = totalSecToday - lastReset;
+        const currentBottomBlockId = Math.floor(lastReset);
+
+        // Voice alert at every timer reset (:25 and :55)
+        if (elapsedSinceReset >= 0 && elapsedSinceReset < 1 && lastBottomResetKey !== currentBottomBlockId) {
           lastBottomResetKey = currentBottomBlockId;
           playAudio('event.mp3');
         }
@@ -327,7 +371,7 @@
         const bottomCard = document.getElementById('bottom-timer-card');
         const bottomContainer = document.getElementById('bottom-indicator-container');
 
-        const isIlluminated = secInto30MinBlock < 300;
+        const isIlluminated = elapsedSinceReset < 300; // Active/illuminated for first 5 minutes
 
         if (bottomCard) {
           if (isIlluminated) {
@@ -346,10 +390,10 @@
         }
 
         let display30Sec;
-        if (secInto30MinBlock < 300) {
-          display30Sec = 300 - secInto30MinBlock;
+        if (isIlluminated) {
+          display30Sec = 300 - elapsedSinceReset;
         } else {
-          display30Sec = 1800 - secInto30MinBlock;
+          display30Sec = nextReset - totalSecToday;
         }
 
         const m30 = Math.floor(display30Sec / 60);
