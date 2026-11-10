@@ -88,6 +88,8 @@
     .timer-left { display: flex; align-items: center; gap: 12px; }
     
     .icon-box { 
+      position: absolute;
+      left: 16px;
       display: flex; 
       align-items: center; 
       justify-content: center; 
@@ -148,8 +150,10 @@
 
     /* BOTTOM TIMER (DEFAULT -> BLACK FONT WITH WHITE OUTLINE) */
     .timer-secondary {
+      position: relative;
       background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
       border-color: rgba(107, 130, 160, 0.6);
+      justify-content: center;
     }
     .timer-secondary .timer-text { 
       font-size: 34px; 
@@ -173,6 +177,8 @@
 
     /* "NOW" BADGE */
     .now-badge {
+      position: absolute;
+      right: 16px;
       background: #ff2222;
       color: #ffffff;
       font-size: 16px;
@@ -223,16 +229,12 @@
       </div>
     </div>
 
-    <!-- BOTTOM TIMER (:25 & :55 Resets) - Image Left, Timer Text Centered -->
+    <!-- BOTTOM TIMER (:25 & :55 Resets) - Icon Left, Timer Strictly Centered -->
     <div id="bottom-timer-card" class="glass-card timer-card timer-secondary">
-      <div class="timer-left">
-        <div class="icon-box">
-          <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
-        </div>
+      <div class="icon-box">
+        <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
       </div>
-      <div style="flex: 1; display: flex; justify-content: center;">
-        <div id="timer2-text" class="timer-text">30:00</div>
-      </div>
+      <div id="timer2-text" class="timer-text">30:00</div>
       <div id="bottom-indicator-container"></div>
     </div>
 
@@ -248,12 +250,7 @@
     // =========================================================================
     // MANUAL TIMING ADJUSTMENT CONTROLS
     // =========================================================================
-    // 1. streamLagOffsetSec: Adjusts all timers and the clock forward/backward 
-    //    to compensate for stream latency.
     const streamLagOffsetSec = 17;
-
-    // 2. manualTimerCorrectionSec: Fine-tune this value manually if your game 
-    //    timers are out of sync with real time (adds/subtracts seconds globally).
     const manualTimerCorrectionSec = 0; 
     // =========================================================================
 
@@ -310,7 +307,8 @@
           playAudio('30segundos.mp3');
         }
 
-        if (Math.floor(secInto5MinBlock) === 15 && lastAlert445Key !== currentBlockId) {
+        // Trigger 'Go Go Go.mp3' exactly when top timer hits 4:45 remaining (rem5MinSec === 285)
+        if (rawFloorRem === 285 && lastAlert445Key !== currentBlockId) {
           lastAlert445Key = currentBlockId;
           playAudio('Go Go Go.mp3');
         }
