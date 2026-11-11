@@ -318,8 +318,8 @@
           playAudio('30segundos.mp3');
         }
 
-        // Go Go Go alert at 4:45 mark (15 seconds elapsed into 5min block)
-        if (Math.floor(secInto5MinBlock) === 15 && lastAlert445Key !== currentBlockId) {
+        // Go Go Go alert at exactly 4:45 remaining (when rem5MinSec hits 285)
+        if (rawFloorRem === 285 && lastAlert445Key !== currentBlockId) {
           lastAlert445Key = currentBlockId;
           playAudio('Go Go Go.mp3');
         }
