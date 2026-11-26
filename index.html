@@ -285,7 +285,7 @@
     // or call window.stepClockSecond(1) / window.stepClockSecond(-1)
     // =========================================================================
     const streamLagOffsetSec = 14;
-    let manualTimerCorrectionSec = 0;
+    let manualTimerCorrectionSec = -10;
 
     function adjustClockByOneSecond(direction = 1) {
       manualTimerCorrectionSec += (direction >= 0 ? 1 : -1);
