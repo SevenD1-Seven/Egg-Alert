@@ -174,11 +174,58 @@
       color: #ffffff !important;
       text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 0 12px #00ffaa !important;
     }
+
+    /* BOTTOM TIMER (DEFAULT -> BLACK FONT WITH WHITE OUTLINE) */
+    .timer-secondary {
+      background: linear-gradient(180deg, rgba(27, 56, 94, 0.55) 0%, rgba(13, 30, 54, 0.65) 50%, rgba(9, 19, 34, 0.75) 100%);
+      border-color: rgba(107, 130, 160, 0.6);
+    }
+    .timer-secondary .timer-text {
+      font-size: 34px;
+      font-weight: 900;
+      color: #000000;
+      text-shadow: -2px -2px 0 #ffffff, 2px -2px 0 #ffffff, -2px 2px 0 #ffffff, 2px 2px 0 #ffffff;
+      letter-spacing: 1px;
+    }
+
+    .timer-secondary.illuminated {
+      background: linear-gradient(180deg, rgba(0, 255, 128, 0.7) 0%, rgba(0, 204, 102, 0.75) 50%, rgba(0, 153, 76, 0.8) 100%);
+      border-color: #ffffff;
+      animation: pulse-glow-green 1s ease-in-out infinite alternate;
+    }
+    @keyframes pulse-glow-green {
+      0% { box-shadow: 0 0 15px #00ff80, inset 0 0 10px rgba(255,255,255,0.7); }
+      100% { box-shadow: 0 0 35px #fff, 0 0 60px #00ff80, inset 0 0 20px rgba(255,255,255,1); }
+    }
+    .timer-secondary.illuminated .timer-text { color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; font-size: 36px; font-weight: 900; }
+
+    /* "NOW" BADGE VERTICALLY CENTERED */
+    .now-badge {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: #ff2222;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      box-shadow: 0 0 12px #ff0000;
+      animation: flash-now 0.8s infinite alternate;
+      z-index: 4;
+    }
+    @keyframes flash-now {
+      0% { opacity: 0.7; transform: translateY(-50%) scale(0.95); }
+      100% { opacity: 1; transform: translateY(-50%) scale(1.05); }
+    }
   </style>
 </head>
 <body>
 
-  <!-- RIGHT SIDEBAR: BANNERS & MAIN TIMER -->
+  <!-- RIGHT SIDEBAR: BANNERS & TIMERS -->
   <div class="right-sidebar">
     <div class="glass-card banner-card">
       <img class="banner-bg" src="banner1_bg.gif" alt="" onerror="this.style.display='none'">
@@ -209,6 +256,26 @@
         <span id="main-timer-text" class="timer-text">00:10</span>
       </div>
     </div>
+
+    <!-- EVENT TIMER (:25 & :55 Resets) -->
+    <div id="bottom-timer-card" class="glass-card timer-card timer-secondary">
+      <div class="timer-left">
+        <div class="icon-box">
+          <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
+        </div>
+      </div>
+      <div class="absolute-center-timer">
+        <span id="timer2-text" class="timer-text">30:00</span>
+      </div>
+      <div id="bottom-indicator-container"></div>
+    </div>
+
+    <!-- LOCAL TIME DIGITAL CLOCK -->
+    <div class="glass-card timer-card">
+      <div class="timer-left" style="width: 100%; justify-content: center;">
+        <div id="local-clock-text" class="timer-text" style="font-size: 26px; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; letter-spacing: 2px;">12:00:00 AM</div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -237,6 +304,7 @@
     let lastAlertResetKey = -1;
     let lastAlert30SecKey = -1;
     let lastAlert445Key = -1;
+    let lastBottomResetKey = -1;
 
     function playAudio(filename) {
       const audio = new Audio(filename);
@@ -251,7 +319,18 @@
         const nowLag = getLagCompensatedDate();
         const totalSecToday = nowLag.getHours() * 3600 + nowLag.getMinutes() * 60 + nowLag.getSeconds() + nowLag.getMilliseconds() / 1000;
 
-        // --- MAIN 5-MIN TIMER ---
+        // --- LOCAL TIME DIGITAL CLOCK ---
+        const clockEl = document.getElementById('local-clock-text');
+        if (clockEl) {
+          const hours = nowLag.getHours();
+          const minutes = nowLag.getMinutes();
+          const seconds = nowLag.getSeconds();
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          const displayHours = hours % 12 || 12;
+          clockEl.innerText = `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
+        }
+
+        // --- 1. MAIN 5-MIN TIMER ---
         const secInto5MinBlock = ((totalSecToday % 300) + 300) % 300;
         const rem5MinSec = 300 - secInto5MinBlock;
         const currentBlockId = Math.floor(totalSecToday / 300);
@@ -312,6 +391,65 @@
           } else if (secInto5MinBlock >= 15) {
             mainCard.classList.add('glowing-state');
           }
+        }
+
+        // --- 2. EVENT TIMER (Resets at :25 and :55 past every hour) ---
+        const hour = Math.floor(totalSecToday / 3600);
+        const secIntoHour = totalSecToday % 3600;
+
+        let lastReset, nextReset;
+        if (secIntoHour >= 3300) {
+          lastReset = hour * 3600 + 3300;
+          nextReset = (hour + 1) * 3600 + 1500;
+        } else if (secIntoHour >= 1500) {
+          lastReset = hour * 3600 + 1500;
+          nextReset = hour * 3600 + 3300;
+        } else {
+          lastReset = (hour - 1) * 3600 + 3300;
+          nextReset = hour * 3600 + 1500;
+        }
+
+        const elapsedSinceReset = totalSecToday - lastReset;
+        const currentBottomBlockId = Math.floor(lastReset);
+
+        if (elapsedSinceReset >= 0 && elapsedSinceReset < 1 && lastBottomResetKey !== currentBottomBlockId) {
+          lastBottomResetKey = currentBottomBlockId;
+          playAudio('event.mp3');
+        }
+
+        const bottomCard = document.getElementById('bottom-timer-card');
+        const bottomContainer = document.getElementById('bottom-indicator-container');
+
+        const isIlluminated = elapsedSinceReset < 300;
+
+        if (bottomCard) {
+          if (isIlluminated) {
+            bottomCard.classList.add('illuminated');
+          } else {
+            bottomCard.classList.remove('illuminated');
+          }
+        }
+
+        if (bottomContainer) {
+          if (isIlluminated) {
+            bottomContainer.innerHTML = '<div class="now-badge">NOW</div>';
+          } else {
+            bottomContainer.innerHTML = '';
+          }
+        }
+
+        let display30Sec;
+        if (isIlluminated) {
+          display30Sec = 300 - elapsedSinceReset;
+        } else {
+          display30Sec = nextReset - totalSecToday;
+        }
+
+        const m30 = Math.floor(display30Sec / 60);
+        const s30 = Math.floor(display30Sec % 60);
+        const elT2 = document.getElementById('timer2-text');
+        if (elT2) {
+          elT2.innerText = `${String(m30).padStart(2, '0')}:${String(s30).padStart(2, '0')}`;
         }
       } catch (err) {
         console.error("Timer update error:", err);
