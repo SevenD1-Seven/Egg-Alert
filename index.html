@@ -245,4 +245,229 @@
     <div id="main-timer-card" class="glass-card timer-card timer-main">
       <div class="timer-left">
         <div class="icon-box">
-          <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt
+          <img id="main-icon" class="timer-icon" src="sun_icon.jpg" alt="Icon" onerror="this.style.display='none'">
+        </div>
+        <div class="bilingual-header">
+          <span class="lang-top">en</span>
+          <span class="lang-bot">in</span>
+        </div>
+      </div>
+      <div class="absolute-center-timer">
+        <span id="main-timer-text" class="timer-text">00:10</span>
+      </div>
+    </div>
+
+    <!-- EVENT TIMER (:25 & :55 Resets) -->
+    <div id="bottom-timer-card" class="glass-card timer-card timer-secondary">
+      <div class="timer-left">
+        <div class="icon-box">
+          <img class="timer-icon" src="game_icon2.jpg" alt="Event 2" onerror="this.style.display='none'">
+        </div>
+      </div>
+      <div class="absolute-center-timer">
+        <span id="timer2-text" class="timer-text">30:00</span>
+      </div>
+      <div id="bottom-indicator-container"></div>
+    </div>
+
+    <!-- LOCAL TIME DIGITAL CLOCK -->
+    <div class="glass-card timer-card">
+      <div class="timer-left" style="width: 100%; justify-content: center;">
+        <div id="local-clock-text" class="timer-text" style="font-size: 26px; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; letter-spacing: 2px;">12:00:00 AM</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =========================================================================
+    // INDEPENDENT TIMERS & CLOCK OFFSETS
+    // 1) Timers offset ONLY affects the 5-min main timer & :25/:55 event timer.
+    //    Adjust timerOffsetSec or call window.stepTimerSecond(1) / (-1).
+    // 2) Clock offset ONLY affects the local time digital clock.
+    //    Adjust clockOffsetSec or call window.stepClockSecond(1) / (-1).
+    // =========================================================================
+    let timerOffsetSec = 14;
+    let clockOffsetSec = 0;
+
+    function stepTimerSecond(direction = 1) {
+      timerOffsetSec += (direction >= 0 ? 1 : -1);
+      updateTimers();
+      return timerOffsetSec;
+    }
+
+    function stepClockSecond(direction = 1) {
+      clockOffsetSec += (direction >= 0 ? 1 : -1);
+      updateTimers();
+      return clockOffsetSec;
+    }
+
+    window.stepTimerSecond = stepTimerSecond;
+    window.stepClockSecond = stepClockSecond;
+    // =========================================================================
+
+    function getShiftedDate(offsetSeconds) {
+      return new Date(Date.now() + offsetSeconds * 1000);
+    }
+
+    let lastAlertResetKey = -1;
+    let lastAlert30SecKey = -1;
+    let lastAlert445Key = -1;
+    let lastBottomResetKey = -1;
+
+    function playAudio(filename) {
+      const audio = new Audio(filename);
+      audio.volume = 1.0;
+      audio.play().catch(err => {
+        console.log("Custom audio play blocked or missing file:", err);
+      });
+    }
+
+    function updateTimers() {
+      try {
+        // --- LOCAL TIME DIGITAL CLOCK (Uses ONLY clockOffsetSec) ---
+        const nowClock = getShiftedDate(clockOffsetSec);
+        const clockEl = document.getElementById('local-clock-text');
+        if (clockEl) {
+          const hours = nowClock.getHours();
+          const minutes = nowClock.getMinutes();
+          const seconds = nowClock.getSeconds();
+          const ampm = hours >= 12 ? 'PM' : 'AM';
+          const displayHours = hours % 12 || 12;
+          clockEl.innerText = `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
+        }
+
+        // --- TIMERS (Use ONLY timerOffsetSec) ---
+        const nowTimers = getShiftedDate(timerOffsetSec);
+        const totalSecToday = nowTimers.getHours() * 3600 + nowTimers.getMinutes() * 60 + nowTimers.getSeconds() + nowTimers.getMilliseconds() / 1000;
+
+        // --- 1. MAIN 5-MIN TIMER ---
+        const secInto5MinBlock = ((totalSecToday % 300) + 300) % 300;
+        const rem5MinSec = 300 - secInto5MinBlock;
+        const currentBlockId = Math.floor(totalSecToday / 300);
+
+        // Reset start voice alert (10segundos.mp3)
+        if (secInto5MinBlock < 0.5 && lastAlertResetKey !== currentBlockId) {
+          lastAlertResetKey = currentBlockId;
+          playAudio('10segundos.mp3');
+        }
+
+        // 30 seconds remaining alert (30segundos.mp3)
+        const rawFloorRem = Math.floor(rem5MinSec);
+        if (rawFloorRem === 30 && lastAlert30SecKey !== currentBlockId) {
+          lastAlert30SecKey = currentBlockId;
+          playAudio('30segundos.mp3');
+        }
+
+        // Go Go Go alert at 04:45 remaining (285 seconds)
+        if (rawFloorRem === 285 && lastAlert445Key !== currentBlockId) {
+          lastAlert445Key = currentBlockId;
+          playAudio('Go Go Go.mp3');
+        }
+
+        const elMain = document.getElementById('main-timer-text');
+        let displaySec = 0;
+
+        if (rem5MinSec >= 286 && rem5MinSec <= 290) {
+          displaySec = rem5MinSec - 285;
+        } else if (rem5MinSec > 0 && rem5MinSec < 286) {
+          displaySec = rem5MinSec;
+        } else if (rem5MinSec > 290 && rem5MinSec <= 300) {
+          displaySec = rem5MinSec - 290;
+        } else {
+          displaySec = 0;
+        }
+
+        const m5 = Math.floor(displaySec / 60);
+        const s5 = Math.floor(displaySec % 60);
+        if (elMain) {
+          elMain.innerText = `${String(m5).padStart(2, '0')}:${String(s5).padStart(2, '0')}`;
+        }
+
+        const mainIcon = document.getElementById('main-icon');
+        const mainCard = document.getElementById('main-timer-card');
+
+        const isSunActive = (rem5MinSec > 290 && rem5MinSec <= 300);
+
+        if (mainIcon) {
+          mainIcon.src = isSunActive ? 'sun_icon.jpg' : 'moon_icon.jpg';
+        }
+
+        if (mainCard) {
+          mainCard.classList.remove('yellow-state', 'glowing-state', 'lit-0445');
+          if (m5 === 4 && s5 === 45) {
+            mainCard.classList.add('lit-0445');
+          } else if (secInto5MinBlock >= 10 && secInto5MinBlock < 15) {
+            mainCard.classList.add('yellow-state');
+          } else if (secInto5MinBlock >= 15) {
+            mainCard.classList.add('glowing-state');
+          }
+        }
+
+        // --- 2. EVENT TIMER (Resets at :25 and :55 past every hour) ---
+        const hour = Math.floor(totalSecToday / 3600);
+        const secIntoHour = totalSecToday % 3600;
+
+        let lastReset, nextReset;
+        if (secIntoHour >= 3300) {
+          lastReset = hour * 3600 + 3300;
+          nextReset = (hour + 1) * 3600 + 1500;
+        } else if (secIntoHour >= 1500) {
+          lastReset = hour * 3600 + 1500;
+          nextReset = hour * 3600 + 3300;
+        } else {
+          lastReset = (hour - 1) * 3600 + 3300;
+          nextReset = hour * 3600 + 1500;
+        }
+
+        const elapsedSinceReset = totalSecToday - lastReset;
+        const currentBottomBlockId = Math.floor(lastReset);
+
+        if (elapsedSinceReset >= 0 && elapsedSinceReset < 1 && lastBottomResetKey !== currentBottomBlockId) {
+          lastBottomResetKey = currentBottomBlockId;
+          playAudio('event.mp3');
+        }
+
+        const bottomCard = document.getElementById('bottom-timer-card');
+        const bottomContainer = document.getElementById('bottom-indicator-container');
+
+        const isIlluminated = elapsedSinceReset < 300;
+
+        if (bottomCard) {
+          if (isIlluminated) {
+            bottomCard.classList.add('illuminated');
+          } else {
+            bottomCard.classList.remove('illuminated');
+          }
+        }
+
+        if (bottomContainer) {
+          if (isIlluminated) {
+            bottomContainer.innerHTML = '<div class="now-badge">NOW</div>';
+          } else {
+            bottomContainer.innerHTML = '';
+          }
+        }
+
+        let display30Sec;
+        if (isIlluminated) {
+          display30Sec = 300 - elapsedSinceReset;
+        } else {
+          display30Sec = nextReset - totalSecToday;
+        }
+
+        const m30 = Math.floor(display30Sec / 60);
+        const s30 = Math.floor(display30Sec % 60);
+        const elT2 = document.getElementById('timer2-text');
+        if (elT2) {
+          elT2.innerText = `${String(m30).padStart(2, '0')}:${String(s30).padStart(2, '0')}`;
+        }
+      } catch (err) {
+        console.error("Timer update error:", err);
+      }
+    }
+
+    setInterval(updateTimers, 200);
+    updateTimers();
+  </script>
+</body>
+</html>
