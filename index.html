@@ -50,7 +50,7 @@
       background: linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.02) 100%);
       border-radius: 12px 12px 100% 100% / 12px 12px 10px 10px;
       pointer-events: none;
-      z-index: 3;
+      z-index: 2;
     }
 
     .banner-card { height: 75px; }
@@ -59,7 +59,7 @@
       object-fit: cover; z-index: 1; opacity: 0.35; mix-blend-mode: overlay;
     }
     .marquee-wrapper {
-      position: relative; z-index: 2; width: 100%; height: 100%;
+      position: relative; z-index: 3; width: 100%; height: 100%;
       display: flex; align-items: center; overflow: hidden; white-space: nowrap;
     }
     .marquee-text {
@@ -85,7 +85,7 @@
       align-items: center;
       padding: 0 16px;
     }
-    .timer-left { display: flex; align-items: center; gap: 12px; z-index: 4; }
+    .timer-left { display: flex; align-items: center; gap: 12px; z-index: 5; }
 
     .icon-box {
       display: flex;
@@ -94,7 +94,7 @@
       width: 64px;
       height: 64px;
       flex-shrink: 0;
-      z-index: 4;
+      z-index: 5;
     }
     .timer-icon {
       width: 120%;
@@ -109,7 +109,7 @@
       align-items: center;
       justify-content: center;
       line-height: 1.1;
-      z-index: 4;
+      z-index: 5;
       background: rgba(0, 0, 0, 0.4);
       padding: 6px 10px;
       border-radius: 8px;
@@ -125,7 +125,7 @@
       right: 0;
       text-align: center;
       pointer-events: none;
-      z-index: 2;
+      z-index: 4;
     }
 
     /* MAIN COUNTER NUMBERS SLIGHTLY TO THE RIGHT */
@@ -199,6 +199,16 @@
     }
     .timer-secondary.illuminated .timer-text { color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; font-size: 36px; font-weight: 900; }
 
+    /* LOCAL CLOCK TEXT */
+    #local-clock-text {
+      font-size: 26px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000;
+      letter-spacing: 2px;
+      z-index: 5;
+    }
+
     /* "NOW" BADGE VERTICALLY CENTERED */
     .now-badge {
       position: absolute;
@@ -215,7 +225,7 @@
       letter-spacing: 1.5px;
       box-shadow: 0 0 12px #ff0000;
       animation: flash-now 0.8s infinite alternate;
-      z-index: 4;
+      z-index: 5;
     }
     @keyframes flash-now {
       0% { opacity: 0.7; transform: translateY(-50%) scale(0.95); }
@@ -273,7 +283,7 @@
     <!-- LOCAL TIME DIGITAL CLOCK -->
     <div class="glass-card timer-card">
       <div class="timer-left" style="width: 100%; justify-content: center;">
-        <div id="local-clock-text" class="timer-text" style="font-size: 26px; color: #ffffff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000; letter-spacing: 2px;">12:00:00 AM</div>
+        <div id="local-clock-text">12:00:00 AM</div>
       </div>
     </div>
   </div>
@@ -333,7 +343,7 @@
           const seconds = nowClock.getSeconds();
           const ampm = hours >= 12 ? 'PM' : 'AM';
           const displayHours = hours % 12 || 12;
-          clockEl.innerText = `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
+          clockEl.textContent = `${String(displayHours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')} ${ampm}`;
         }
 
         // --- TIMERS (Use ONLY timerOffsetSec) ---
@@ -345,20 +355,17 @@
         const rem5MinSec = 300 - secInto5MinBlock;
         const currentBlockId = Math.floor(totalSecToday / 300);
 
-        // Reset start voice alert (10segundos.mp3)
         if (secInto5MinBlock < 0.5 && lastAlertResetKey !== currentBlockId) {
           lastAlertResetKey = currentBlockId;
           playAudio('10segundos.mp3');
         }
 
-        // 30 seconds remaining alert (30segundos.mp3)
         const rawFloorRem = Math.floor(rem5MinSec);
         if (rawFloorRem === 30 && lastAlert30SecKey !== currentBlockId) {
           lastAlert30SecKey = currentBlockId;
           playAudio('30segundos.mp3');
         }
 
-        // Go Go Go alert at 04:45 remaining (285 seconds)
         if (rawFloorRem === 285 && lastAlert445Key !== currentBlockId) {
           lastAlert445Key = currentBlockId;
           playAudio('Go Go Go.mp3');
@@ -380,7 +387,7 @@
         const m5 = Math.floor(displaySec / 60);
         const s5 = Math.floor(displaySec % 60);
         if (elMain) {
-          elMain.innerText = `${String(m5).padStart(2, '0')}:${String(s5).padStart(2, '0')}`;
+          elMain.textContent = `${String(m5).padStart(2, '0')}:${String(s5).padStart(2, '0')}`;
         }
 
         const mainIcon = document.getElementById('main-icon');
@@ -459,7 +466,7 @@
         const s30 = Math.floor(display30Sec % 60);
         const elT2 = document.getElementById('timer2-text');
         if (elT2) {
-          elT2.innerText = `${String(m30).padStart(2, '0')}:${String(s30).padStart(2, '0')}`;
+          elT2.textContent = `${String(m30).padStart(2, '0')}:${String(s30).padStart(2, '0')}`;
         }
       } catch (err) {
         console.error("Timer update error:", err);
